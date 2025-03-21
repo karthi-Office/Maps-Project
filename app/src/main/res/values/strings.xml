@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Maps Project</string>
+    <string name="fabbtn">fabBtn</string>
+    <string name="add_markers">Add Markers</string>
+    <string name="calculate_area">Calculate Total Area</string>
+    <string name="area_in_square_meters">Area in square meters :</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="find_nearest_edge">Find Nearest Boundary</string>
+    <string name="find_nearest_marker">Find Nearest Marker</string>
+    <string name="current_location_to_center_point">Current Location to center point</string>
+    <string name="clear_marker">Clear Marker</string>
+    <string name="clear_all_markers">Clear All Markers</string>
+    <string name="cancel">Cancel</string>
+    <string name="go_live">Go Live</string>
+    <string name="close_marker_options">Close Marker Options</string>
+</resources>

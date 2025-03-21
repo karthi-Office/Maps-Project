@@ -1,0 +1,9 @@
+{
+  "featureType": "all",
+  "elementType": "geometry",
+  "stylers": [
+    {
+      "color": "#212121"
+    }
+  ]
+}

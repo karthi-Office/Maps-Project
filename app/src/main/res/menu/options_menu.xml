@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+<item android:id="@+id/addMarkersInMap"
+    android:title="@string/add_markers" />
+
+    <item android:id="@+id/calculate_total_area"
+        android:title="@string/calculate_area" />
+
+    <item android:id="@+id/find_nearestEdge"
+        android:title="@string/find_nearest_edge" />
+    <item android:id="@+id/find_nearest_marker"
+        android:title="@string/find_nearest_marker" />
+    <item android:id="@+id/current_to_center_point"
+        android:title="@string/current_location_to_center_point" />
+
+</menu>
