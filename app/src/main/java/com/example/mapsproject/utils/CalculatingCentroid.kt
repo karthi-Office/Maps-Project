@@ -1,8 +1,6 @@
 package com.example.mapsproject.utils
 
-import android.widget.Toast
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.SphericalUtil
 
 object CalculatingCentroid {
@@ -27,6 +25,7 @@ object CalculatingCentroid {
         var longitudeSum = 0.0
 
         for (point in latLngList) {
+
             latitudeSum += point.latitude
             longitudeSum += point.longitude
         }

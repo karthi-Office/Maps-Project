@@ -23,6 +23,8 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import com.example.mapsproject.databinding.ActivityMainBinding
+import com.example.mapsproject.services.MapServices
+import com.example.mapsproject.services.VibrationService
 import com.example.mapsproject.utils.CalculatingCentroid.calculateCentroid
 import com.example.mapsproject.utils.CalculatingCentroid.calculatePolygonArea
 import com.example.mapsproject.utils.CalculatingNearestEdges.calculateDistance
@@ -67,7 +69,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private var dottedLine: Polyline? = null
     private var nearestPointMarker: Marker? = null
     private var distanceMarker: Marker? = null
-
+    private var service = false
+    private var serviceStarted = false
 
 
 
@@ -312,6 +315,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         // Calculate distance using Haversine formula
         val distance = calculateDistance(currentLocation, centroid)
 
+
         // Draw Dotted Line
         dottedLine = gMap.addPolyline(
             PolylineOptions()
@@ -327,6 +331,25 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             MarkerOptions().position(centroid).title("Centroid")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
         )
+        Log.d("disatance" ,"$distance")
+
+        viewModel.isLive.observe(this) { live ->
+           Log.d("live","$live")
+
+            if (distance <= 5.00 && live && !serviceStarted) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(Intent(this, VibrationService::class.java))
+                } else {
+                    startService(Intent(this, VibrationService::class.java))
+                }
+                serviceStarted = true
+            } else {
+                stopService(Intent(this, VibrationService::class.java))
+                serviceStarted = false
+            }
+
+        }
+
 
         // Display Distance on the Line
         val distanceText = String.format("%.2f meters", distance)
@@ -361,7 +384,22 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 nearestPoint = point
             }
         }
+        viewModel.isLive.observe(this) { live ->
+            Log.d("live","$live")
 
+            if (shortestDistance <= 5.00 && live && !serviceStarted) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(Intent(this, VibrationService::class.java))
+                } else {
+                    startService(Intent(this, VibrationService::class.java))
+                }
+                serviceStarted = true
+            } else {
+                stopService(Intent(this, VibrationService::class.java))
+                serviceStarted = false
+            }
+
+        }
         nearestPoint?.let { point ->
             // Draw marker at nearest point
             nearestPointMarker = gMap.addMarker(
@@ -415,6 +453,22 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 shortestDistance = distance
                 nearestPoint = pointOnEdge
             }
+        }
+        viewModel.isLive.observe(this) { live ->
+            Log.d("live","$live")
+
+            if (shortestDistance <= 5.00 && live && !serviceStarted) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(Intent(this, VibrationService::class.java))
+                } else {
+                    startService(Intent(this, VibrationService::class.java))
+                }
+                serviceStarted = true
+            } else {
+                stopService(Intent(this, VibrationService::class.java))
+                serviceStarted = false
+            }
+
         }
 
         // Draw a dotted line from current location to nearest point
@@ -486,6 +540,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         dottedLine = null
         nearestPointMarker = null
         distanceMarker = null
+        stopService(Intent(this,VibrationService::class.java))
     }
 
     // Setting up on Click on map function listener
@@ -542,6 +597,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
               Log.d("is this live" ,"${viewModel.isLive.value}")
                         if(viewModel.nearestMarkerLive.value == false && viewModel.currentToCenter.value == false && viewModel.nearestBoundaryLive.value == true && manualMarkerList.size>=3){
                             findNearestBoundary()
+
                         }
                         if(viewModel.nearestMarkerLive.value == true && viewModel.currentToCenter.value == false && viewModel.nearestBoundaryLive.value == false && manualMarkerList.size>=3){
                             findNearestMarker()
