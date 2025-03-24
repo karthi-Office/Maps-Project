@@ -92,6 +92,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             markerState()
             calculationState()
             setUpIsLive()
+            draggableEvent()
         }
 
 
@@ -135,8 +136,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
              clearAllMarkers()
         }
 
-
-
         //Shut down all markers activity's
         binding.closeMarker.setOnClickListener {
             viewModel.setMarkerFlagFalse()
@@ -158,7 +157,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             if(isChecked){
 
                 viewModel.setLiveFlagTrue()
-
 
             }else{
 
@@ -215,8 +213,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-
-
     //clear single marker function
     private fun clearAllMarkers() {
         manualMarkerList.clear()
@@ -255,8 +251,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                           viewModel.setNearestBoundaryLiveFlagTrue()
                       }
                   }
-
-
                     true
                 }
                 R.id.find_nearest_marker ->{
@@ -707,7 +701,12 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             Toast.makeText(this, "Markers do not form a polygon!", Toast.LENGTH_SHORT).show()
         } else {
             // Add the marker to the map and the list
-            val tempMarker = gMap.addMarker(MarkerOptions().position(latLng).title("Marker ${manualMarkerList.size}"))
+            val tempMarker = gMap.addMarker(
+                MarkerOptions()
+                .position(latLng)
+                .title("Marker ${manualMarkerList.size}")
+                    .draggable(true)
+            )
             manualMarkerList.add(latLng)
           markersList.add(tempMarker!!)
 
@@ -763,6 +762,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         gMap.addPolygon(polygonOptions)
     }
 
+    @SuppressLint("PotentialBehaviorOverride")
     fun applyMapStyle() {
         val nightModeFlags = this.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
 
@@ -780,5 +780,70 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
+    }
+
+    fun drawingPolygonOnDragging(newIndex : Int, newLatLng: LatLng) {
+        // Check if the markers form a valid polygon
+
+
+        // Add the marker to the map and the list
+        if (manualMarkerList.size >= 3 && !isPolygon(manualMarkerList)) {
+            Toast.makeText(this, "Markers do not form a polygon!", Toast.LENGTH_SHORT).show()
+        } else {
+            val tempMarker = gMap.addMarker(
+                MarkerOptions()
+                    .position(newLatLng)
+                    .title("Marker ${manualMarkerList.size}")
+                    .draggable(true)
+            )
+            manualMarkerList.removeAt(newIndex)
+            markersList.removeAt(newIndex)
+            markersList.add(newIndex, tempMarker!!)
+            manualMarkerList.add(newIndex, newLatLng)
+
+
+            // Draw lines between markers
+            drawLinesBetweenMarkers()
+
+            // Draw the polygon if there are at least 3 markers
+            if (manualMarkerList.size >= 3) {
+                drawPolygon()
+            }
+        }
+    }
+
+    @SuppressLint("PotentialBehaviorOverride")
+    private fun draggableEvent(){        // Set marker drag listeners
+        gMap.setOnMarkerDragListener(
+
+            object : GoogleMap.OnMarkerDragListener {
+
+                override fun onMarkerDragStart(marker: Marker) {
+                    // Called when the drag starts
+
+                    marker.title = "Dragging Started!"
+                    marker.showInfoWindow()
+                    Log.d("postion", "${markersList.indexOf(marker)}")
+                }
+
+
+                override fun onMarkerDrag(marker: Marker) {
+                    // Called repeatedly while dragging
+
+                    marker.showInfoWindow()
+
+                }
+
+                override fun onMarkerDragEnd(marker: Marker) {
+                    // Called when drag ends
+                    val newMarkerIndex = markersList.indexOf(marker)
+                    val newLatLng = LatLng(marker.position.latitude, marker.position.longitude)
+
+                    drawingPolygonOnDragging(newMarkerIndex, newLatLng)
+                    marker.showInfoWindow()
+                }
+            })
+
     }
 }
