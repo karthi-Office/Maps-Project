@@ -40,4 +40,11 @@ class MapViewModel @Inject constructor() : ViewModel() {
     fun setCurrentToCenterLiveFlagFalse() { currentToCenter.value = false }
 
 
+//calculate total area
+    val calculateTotalArea = MutableLiveData(false)
+    fun setCalculateAreaLiveFlagTrue() { calculateTotalArea.value = true }
+    fun setCalculateAreaLiveFlagFalse() { calculateTotalArea.value = false }
+
+
+
 }

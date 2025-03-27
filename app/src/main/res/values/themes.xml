@@ -58,8 +58,15 @@
         <item name="cornerRadius">@dimen/_36sdp</item>
         <item name="cornerSize">50%</item>
     </style>
+
+
     <style name="optons" parent="ShapeAppearance.Material3.SmallComponent">
         <item name="shapeAppearanceOverlay">@style/addLocationfab</item>
+    </style>
+    <style name="data_card" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerRadius">@dimen/_36sdp</item>
+        <item name="cornerSize">10%</item>
     </style>
     <style name="addLocationfab" parent="ShapeAppearance.Material3.MediumComponent">
         <item name="cornerFamily">rounded</item>

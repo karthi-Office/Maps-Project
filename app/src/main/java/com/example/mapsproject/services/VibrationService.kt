@@ -14,18 +14,19 @@ import android.os.Vibrator
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.mapsproject.MainActivity
-
 class VibrationService : Service() {
 
     private lateinit var vibrator: Vibrator
 
     override fun onCreate() {
         super.onCreate()
+
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator ?: run {
-            Log.e("VibrationService", "Vibrator not available")
+            Log.e("VibrationService", "Vibrator not available, stopping service")
             stopSelf()
             return
         }
+
         createNotificationChannel()
         startForeground(1, createNotification())
     }
@@ -43,7 +44,7 @@ class VibrationService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        vibrator.cancel() // Stop vibration
+        vibrator.cancel()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -53,8 +54,9 @@ class VibrationService : Service() {
             val channel = NotificationChannel(
                 "VibrationServiceChannel",
                 "Vibration Service",
-                NotificationManager.IMPORTANCE_LOW
+                NotificationManager.IMPORTANCE_DEFAULT
             )
+            channel.description = "Handles vibration in the foreground"
             val manager = getSystemService(NotificationManager::class.java)
             manager?.createNotificationChannel(channel)
         }
@@ -64,13 +66,19 @@ class VibrationService : Service() {
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
 
         return NotificationCompat.Builder(this, "VibrationServiceChannel")
             .setContentTitle("Vibration Service")
             .setContentText("Vibrating in progress")
             .setSmallIcon(android.R.drawable.ic_dialog_alert)
             .setContentIntent(pendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_HIGH) // Ensure visibility
             .build()
     }
 }
