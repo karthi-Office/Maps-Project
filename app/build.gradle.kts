@@ -48,7 +48,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -63,7 +62,8 @@ dependencies {
      implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
      implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
     //map
-//    implementation(libs.google.maps)
+////    implementation(libs.google.maps)
+//    implementation("com.mapbox.maps:android:10.0.0")
     implementation(libs.mapsKtx)
     //sdp
     implementation (libs.sdp.android)

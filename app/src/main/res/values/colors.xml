@@ -109,6 +109,7 @@
     <color name="md_theme_error_highContrast">#600004</color>
     <color name="md_theme_onError_highContrast">#FFFFFF</color>
     <color name="md_theme_errorContainer_highContrast">#98000A</color>
+    <color name="rose">#C78085</color>
     <color name="md_theme_onErrorContainer_highContrast">#FFFFFF</color>
     <color name="md_theme_background_highContrast">#FAF8FF</color>
     <color name="md_theme_onBackground_highContrast">#1A1B20</color>

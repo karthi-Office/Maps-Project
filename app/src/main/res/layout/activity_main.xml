@@ -17,34 +17,144 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintVertical_bias="1.0"
         tools:context=".MapsActivity" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/currentLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_20sdp"
+        android:layout_margin="@dimen/_10sdp"
         android:contentDescription="@string/fabbtn"
         android:src="@drawable/baseline_location_pin_24"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.98"
+        app:layout_constraintVertical_bias="1"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearanceOverlay="@style/fabShape" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_area_into_db"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_20sdp"
         android:backgroundTint="@color/md_theme_secondaryContainer_mediumContrast"
         android:contentDescription="@string/fabbtn"
+        android:scaleY=".7"
+        android:scaleX=".7"
         android:src="@drawable/add_location_alt_24px"
         app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:alpha=".8"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintVertical_bias=".85"
+        app:layout_constraintHorizontal_bias=".02"
+        app:layout_constraintVertical_bias=".9"
+        app:shapeAppearanceOverlay="@style/addLocationfab" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_markers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/md_theme_onSecondaryContainer_highContrast"
+        android:contentDescription="@string/fabbtn"
+        android:src="@drawable/add_marker"
+        android:alpha=".9"
+        android:scaleY=".7"
+        android:scaleX=".7"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias=".98"
+        app:layout_constraintVertical_bias=".17"
+        app:shapeAppearanceOverlay="@style/addLocationfab" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/calculate_total_area"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/md_theme_surfaceContainerHighest_highContrast"
+        android:contentDescription="@string/fabbtn"
+        android:src="@drawable/total_area"
+        android:alpha=".9"
+        android:scaleY=".7"
+        android:scaleX=".7"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias=".98"
+        app:layout_constraintVertical_bias=".23"
+        app:shapeAppearanceOverlay="@style/addLocationfab" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/nearest_boundary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/md_theme_tertiaryFixedDim"
+        android:contentDescription="@string/fabbtn"
+        android:src="@drawable/arrow_and_edge_24px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:alpha=".9"
+        android:scaleY=".7"
+        android:scaleX=".7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias=".98"
+        app:layout_constraintVertical_bias=".29"
+        app:shapeAppearanceOverlay="@style/addLocationfab" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/nearest_marker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/md_theme_primaryFixedDim"
+        android:contentDescription="@string/fabbtn"
+        android:alpha=".9"
+        android:scaleY=".7"
+        android:scaleX=".7"
+        android:src="@drawable/arrow_outward_24px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias=".98"
+        app:layout_constraintVertical_bias=".35"
+        app:shapeAppearanceOverlay="@style/addLocationfab" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/current_location_to_center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha=".9"
+        android:scaleY=".7"
+        android:scaleX=".7"
+        android:backgroundTint="@color/md_theme_primaryFixed_mediumContrast"
+        android:contentDescription="@string/fabbtn"
+        android:src="@drawable/baseline_home_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias=".98"
+        app:layout_constraintVertical_bias=".41"
+        app:shapeAppearanceOverlay="@style/addLocationfab" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/options"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleY=".7"
+        android:scaleX=".7"
+        android:backgroundTint="@color/rose"
+        android:contentDescription="@string/fabbtn"
+        android:src="@drawable/lists_24px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:alpha=".9"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.98"
+        app:layout_constraintVertical_bias=".06"
         app:shapeAppearanceOverlay="@style/addLocationfab" />
 
     <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
@@ -59,23 +169,23 @@
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        app:shapeAppearanceOverlay="@style/addLocationfab" />-->
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/menu"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/_20sdp"
-        android:contentDescription="@string/fabbtn"
-        android:foregroundGravity="left"
-        android:src="@drawable/baseline_menu_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent=".07"
-        app:layout_constraintHorizontal_bias=".95"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias=".02"
-        app:layout_constraintWidth_percent=".14"
-        app:shapeAppearanceOverlay="@style/addLocationfab" />
+<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--        android:id="@+id/menu"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_marginTop="@dimen/_20sdp"-->
+<!--        android:contentDescription="@string/fabbtn"-->
+<!--        android:foregroundGravity="left"-->
+<!--        android:src="@drawable/baseline_menu_24"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHeight_percent=".07"-->
+<!--        app:layout_constraintHorizontal_bias=".95"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias=".02"-->
+<!--        app:layout_constraintWidth_percent=".14"-->
+<!--        app:shapeAppearanceOverlay="@style/addLocationfab" />-->
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/optionsCard"
@@ -85,9 +195,9 @@
         app:cardElevation="@dimen/_3sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="16:4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.7"
-        app:layout_constraintStart_toEndOf="@id/currentLocation"
+        app:layout_constraintEnd_toStartOf="@id/current_location_to_center"
+        app:layout_constraintHorizontal_bias="0.3"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias=".98"
         app:layout_constraintWidth_percent=".58">

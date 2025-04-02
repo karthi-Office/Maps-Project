@@ -27,6 +27,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.mapsproject.databinding.ActivityMainBinding
 import com.example.mapsproject.model.LatLangEntity
 import com.example.mapsproject.services.VibrationService
+import com.example.mapsproject.utils.BitMapDescriptors.bitmapDescriptorFromVector
 import com.example.mapsproject.utils.CalculatingCentroid.calculateCentroid
 import com.example.mapsproject.utils.CalculatingCentroid.calculatePolygonArea
 import com.example.mapsproject.utils.CalculatingNearestEdges.calculateDistance
@@ -41,6 +42,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.Dot
 import com.google.android.gms.maps.model.Gap
+import com.google.android.gms.maps.model.GroundOverlay
+import com.google.android.gms.maps.model.GroundOverlayOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
@@ -50,6 +53,7 @@ import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.google.maps.android.data.Style
 import com.google.maps.android.ktx.awaitMap
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Deferred
@@ -78,7 +82,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private var serviceStarted = false
     private val handler = Handler(Looper.getMainLooper())
     private var progress = 0
-
+    private var personMarker: GroundOverlay? = null // Track the 3D person marker
      private lateinit var dBData : List<LatLangEntity>
 //    state
     private var inCalculateTotalArea = false
@@ -101,7 +105,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         lifecycleScope.launch {
             val map = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
             gMap = map?.awaitMap() ?: return@launch
-            setUpDataBaseMarker()
+//            setUpDataBaseMarker()
             applyMapStyle()
             checkLocationPermission()
             notificationPermissionEnable()
@@ -115,10 +119,57 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
      Log.d("data", viewModel.allLiveLatLng.value.toString())
         //Menu
 
-        binding.menu.setOnClickListener { v: View ->
+        binding.options.setOnClickListener { v: View ->
             showMenu(v, R.menu.options_menu)
         }
 
+
+        binding.addMarkers.setOnClickListener {
+            setAllStatesFalse()
+            addMarkersInTheMap()
+        }
+        //Total area
+        binding.calculateTotalArea.setOnClickListener {
+            if(manualMarkerList.size<3) {
+                Toast.makeText(this, "Need at least 3 Markers",Toast.LENGTH_SHORT).show()
+                  return@setOnClickListener
+            }
+
+            settingUpCalculateTotalAreaIn()
+
+            Log.d("valures","$inCurrentToCenter  $inNearestEdge $inNearestBoundary $inCalculateTotalArea" )
+
+            calculateTheToatalArea()
+        }
+        //nearest boundary
+        binding.nearestBoundary.setOnClickListener {
+            if(manualMarkerList.size<3) {
+                Toast.makeText(this, "Need at least 3 Markers",Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            settingUpNearestBoundaryIn()
+            findNearestBoundary()
+        }
+        //nearest marker
+        binding.nearestMarker.setOnClickListener {
+            if(manualMarkerList.size<3) {
+                Toast.makeText(this, "Need at least Markers",Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            settingUpNearestMarkerIn()
+            findNearestMarker()
+        }
+        //current to center
+        binding.currentLocationToCenter.setOnClickListener {
+            if(manualMarkerList.size<3) {
+                Toast.makeText(this, "Need at least Markers",Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            settingUpCurrentToCenterIn()
+            findCurrentPointToCenterPoint()
+        }
 
 
         //calculation cancel button
@@ -169,7 +220,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 var userInput = ""
 
                 val builder = MaterialAlertDialogBuilder(this)
-                builder.setTitle("Enter Text")
+                builder.setTitle("Add to the Storage")
+                builder.setMessage("Set a Name to the Plot")
                 builder.setView(customView)
 
                 builder.setPositiveButton("OK") { dialog, _ ->
@@ -192,10 +244,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 builder.show()
                 viewModel.setMarkerFlagFalse()
                 viewModel.setCalculationFlagFalse()
-                Toast.makeText(this,"Added Into Data Base",Toast.LENGTH_SHORT).show()
+
 
             }else Toast.makeText(this,"Add At least 3 markers",Toast.LENGTH_SHORT).show()
-
+            Toast.makeText(this,"Added Into Data Base",Toast.LENGTH_SHORT).show()
         }
 
     }
@@ -401,60 +453,31 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
        popup.setOnMenuItemClickListener { menuItem: MenuItem ->
             when(menuItem.itemId) {
-                R.id.addMarkersInMap -> {
-                     setAllStatesFalse()
-                    addMarkersInTheMap()
-                    true
-                }
-
-                R.id.calculate_total_area ->{
-                    if(manualMarkerList.size<3) {
-                        Toast.makeText(this, "Need at least 3 Markers",Toast.LENGTH_SHORT).show()
-                        return@setOnMenuItemClickListener true
-                    }
-
-                       settingUpCalculateTotalAreaIn()
-
-                    Log.d("valures","$inCurrentToCenter  $inNearestEdge $inNearestBoundary $inCalculateTotalArea" )
-
-                    calculateTheToatalArea()
+                R.id.show_list -> {
 
                     true
                 }
 
-                R.id.find_nearestEdge -> {
-                    if(manualMarkerList.size<3) {
-                        Toast.makeText(this, "Need at least 3 Markers",Toast.LENGTH_SHORT).show()
-                        return@setOnMenuItemClickListener true
-                    }
-                   settingUpNearestBoundaryIn()
-                    findNearestBoundary()
-                    true
-                }
-                R.id.find_nearest_marker ->{
-                    if(manualMarkerList.size<3) {
-                        Toast.makeText(this, "Need at least Markers",Toast.LENGTH_SHORT).show()
-                        return@setOnMenuItemClickListener true
-                    }
 
-                    settingUpNearestMarkerIn()
-                    findNearestMarker()
-                    true
-                }
-                R.id.current_to_center_point ->{
-                    if(manualMarkerList.size<3) {
-                        Toast.makeText(this, "Need at least Markers",Toast.LENGTH_SHORT).show()
-                        return@setOnMenuItemClickListener true
-                    }
+               R.id.Delete_All_Plots -> {
 
-                    settingUpCurrentToCenterIn()
-                    findCurrentPointToCenterPoint()
-                    true
-                }
+                   MaterialAlertDialogBuilder(this)
+                       .setTitle("Alert")
+                       .setMessage("Are You sure want to clean Data base")
+                       .setNeutralButton(resources.getString(R.string.cancel)) { dialog, which ->
+                           // Respond to neutral button press
+                           dialog.dismiss()
+                       }
 
-               R.id.Delete_All -> {
-                   deleteAllData()
-                   resetApp()
+                       .setPositiveButton("Yes") { dialog, which ->
+                           // Respond to positive button press
+                           deleteAllData()
+                           resetApp()
+                           dialog.dismiss()
+                           Toast.makeText(this,"Data base cleared",Toast.LENGTH_SHORT).show()
+                       }
+                       .show()
+
                    true
                }
                 else -> false
@@ -522,7 +545,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 .pattern(listOf(Dot(), Gap(20f)))
                 .width(10f)
         )
-
+      val icons =
+          bitmapDescriptorFromVector(this, R.drawable.baseline_person_24)
         // Place Marker at Centroid
         nearestPointMarker = gMap.addMarker(
             MarkerOptions().position(centroid).title("Centroid")
@@ -780,33 +804,47 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000L) // Every 5 seconds
             .setMinUpdateIntervalMillis(2000L) // Minimum 1 second between updates
             .build()
-
+        val personIcon = bitmapDescriptorFromVector(this,R.drawable.baseline_person_24)
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult.lastLocation?.let { location ->
                     val userLatLng = LatLng(location.latitude, location.longitude)
                     latLangLiveData.value = userLatLng
-                    if(animationFlag) {
+
+                    if (animationFlag) {
                         gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 22f))
                         animationFlag = !animationFlag
                     }
-                    //setting up for only one action
 
-                        if (viewModel.isLive.value == true && inNearestBoundary) {
-                            findNearestBoundary()
-
-                        }
-                        if (viewModel.isLive.value == true && inNearestEdge) {
-                            findNearestMarker()
-                        }
-                        if (viewModel.isLive.value == true && inCurrentToCenter) {
-                            findCurrentPointToCenterPoint()
+//                     B. Update/create 3D person marker
+//                    if (personMarker == null) {
+//                        // First time: create marker
+//                        personMarker = gMap.addGroundOverlay(
+//                            GroundOverlayOptions()
+//                                .position(userLatLng,20f,20f)
+//                                .image(personIcon!!)
+//                                .anchor(0.5f, 0.5f) // Center the icon
+//                                .zIndex(100f) // Ensure it appears above other markers
+//                        )
+//                    } else {
+//                        // Subsequent updates: move marker
+//                        personMarker?.position = userLatLng
+//
+//                    }
+//                    personMarker?.rotation = location.bearing
+//                     C. Your existing boundary/marker logic
+                    if (viewModel.isLive.value == true) {
+                        when {
+                            inNearestBoundary -> findNearestBoundary()
+                            inNearestEdge -> findNearestMarker()
+                            inCurrentToCenter -> findCurrentPointToCenterPoint()
                         }
 
                     }
-
+                }
             }
         }
+
         gMap.isMyLocationEnabled = true
         gMap.uiSettings.isMyLocationButtonEnabled = false
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
