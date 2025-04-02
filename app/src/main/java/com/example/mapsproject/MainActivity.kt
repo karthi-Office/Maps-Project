@@ -13,6 +13,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -24,7 +25,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import com.example.mapsproject.databinding.ActivityMainBinding
-import com.example.mapsproject.services.MapServices
+import com.example.mapsproject.model.LatLangEntity
 import com.example.mapsproject.services.VibrationService
 import com.example.mapsproject.utils.CalculatingCentroid.calculateCentroid
 import com.example.mapsproject.utils.CalculatingCentroid.calculatePolygonArea
@@ -48,8 +49,12 @@ import com.google.android.gms.maps.model.PolygonOptions
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
 import com.google.maps.android.ktx.awaitMap
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import pub.devrel.easypermissions.EasyPermissions
 @AndroidEntryPoint
@@ -74,18 +79,20 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private val handler = Handler(Looper.getMainLooper())
     private var progress = 0
 
-
+     private lateinit var dBData : List<LatLangEntity>
 //    state
     private var inCalculateTotalArea = false
     private var inNearestBoundary = false
     private var inNearestEdge = false
     private var inCurrentToCenter = false
 
+
      private val viewModel : MapViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -94,6 +101,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         lifecycleScope.launch {
             val map = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
             gMap = map?.awaitMap() ?: return@launch
+            setUpDataBaseMarker()
             applyMapStyle()
             checkLocationPermission()
             notificationPermissionEnable()
@@ -101,10 +109,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             calculationState()
             setUpIsLive()
             draggableEvent()
-            initObservers()
+
         }
 
-
+     Log.d("data", viewModel.allLiveLatLng.value.toString())
         //Menu
 
         binding.menu.setOnClickListener { v: View ->
@@ -134,7 +142,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         binding.clearMarker.setOnClickListener {
             if (markersList.size>1){
             clearLastMarker()
-            drawPolygon()
+            drawPolygon(manualMarkerList)
         }else{
            clearAllMarkers()
             }
@@ -151,6 +159,72 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             clearAllMarkers()
             gMap.setOnMapClickListener(null)
         }
+
+        binding.addAreaIntoDb.setOnClickListener {
+
+            if (manualMarkerList.size >= 3) {
+                removeDottedLineAndMarkers()
+                val customView = LayoutInflater.from(this).inflate(R.layout.text_field_for_name,null)
+                val inputText = customView.findViewById<TextInputEditText>(R.id.inputText)
+                var userInput = ""
+
+                val builder = MaterialAlertDialogBuilder(this)
+                builder.setTitle("Enter Text")
+                builder.setView(customView)
+
+                builder.setPositiveButton("OK") { dialog, _ ->
+                    userInput = inputText.text.toString()
+                    Log.d("UserInput", userInput)
+                    addSingleLatLngList( LatLangEntity(
+                        id = 0,
+                        locationName = userInput,
+                        latLangList = manualMarkerList
+                    ))
+                    dialog.dismiss()
+                    resetApp()
+                }
+
+                builder.setNegativeButton("Cancel") { dialog, _ ->
+                    userInput = "cancel"
+                    dialog.dismiss()
+                }
+
+                builder.show()
+                viewModel.setMarkerFlagFalse()
+                viewModel.setCalculationFlagFalse()
+                Toast.makeText(this,"Added Into Data Base",Toast.LENGTH_SHORT).show()
+
+            }else Toast.makeText(this,"Add At least 3 markers",Toast.LENGTH_SHORT).show()
+
+        }
+
+    }
+
+
+
+
+
+    private fun setUpDataBaseMarker() {
+         resetApp()
+        viewModel.allLiveLatLng.observe(this){markerEntity->
+            markerEntity.forEach { places ->
+
+                if (places.latLangList.size > 2) {
+                    Log.d("all data ", "$places")
+                    drawLinesBetweenMarkers(places.latLangList)
+                    drawPolygon(places.latLangList)
+                    val center = calculateCentroid(places.latLangList)
+                    gMap.addMarker(
+                        MarkerOptions()
+                            .position(center)
+                            .title(places.locationName)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                    )
+
+                }
+
+            }
+        }
     }
 
     override fun onResume() {
@@ -160,19 +234,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     override fun onPause() {
         super.onPause()
         stopService(Intent(this,VibrationService::class.java))
-    }
-
-    private fun initObservers() {
-        viewModel.isLive.observe(this){live ->
-
-            if(live && inCalculateTotalArea)settingUpCalculateTotalAreaState()
-            if(live && inNearestEdge)settingUpNearestEdgeState()
-            if(live && inNearestBoundary)settingUpNearestMarkerState()
-            if(live && inCurrentToCenter)settingUpCurrentToCenterLocationState()
-
-            Log.d("valures","$inCurrentToCenter  $inNearestEdge $inNearestBoundary $inCalculateTotalArea" )
-
-        }
     }
 
     private fun notificationPermissionEnable() {
@@ -189,10 +250,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun setAllStatesFalse() {
-        viewModel.setNearestMarkerLiveFlagFalse()
-        viewModel.setNearestBoundaryLiveFlagFalse()
-        viewModel.setCurrentToCenterLiveFlagFalse()
-        viewModel.setCalculateAreaLiveFlagFalse()
+        viewModel.setLiveFlagFalse()
+        binding.liveButton.isChecked = false
     }
 
     private fun setUpIsLive() {
@@ -254,6 +313,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
         return resultA or resultR or resultG or resultB
     }
+
     private fun calculationState() {
         //calculation state
         viewModel.calculationLiveData.observe(this){ flag->
@@ -271,6 +331,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             binding.let {
                 it.optionsCard.visibility = if (flag) View.VISIBLE else View.GONE
         //                it.addMarkers.visibility = if (flag) View.GONE else View.GONE
+                it.addAreaIntoDb.visibility = if (flag) View.VISIBLE else View.GONE
                 if (flag) setUpOnClickListener() else gMap.setOnMapClickListener(null)
             }
         }
@@ -284,9 +345,9 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             lastMarker.remove() // Remove the marker from the map
             manualMarkerList.removeAt(manualMarkerList.size - 1) // Remove the last LatLng from the list
             // Redraw lines and polygon
-            drawLinesBetweenMarkers()
+            drawLinesBetweenMarkers(manualMarkerList)
             if (manualMarkerList.size >= 3) {
-                drawPolygon()
+                drawPolygon(manualMarkerList)
             } else {
                 // Clear the polygon if there are fewer than 3 markers
                 gMap.clear()
@@ -304,28 +365,55 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         manualMarkerList.clear()
         markersList.clear()
         gMap.clear()
+        setAllStatesFalse()
     }
 
-   //show menu function
+    private fun resetApp(){
+        markersList.clear()
+        gMap.clear()
+        manualMarkerList.clear()
+        setAllStatesFalse()
+        removeDottedLineAndMarkers()
+    }
+
+    //show menu function
     @SuppressLint("DefaultLocale")
     private fun showMenu(v: View, @MenuRes menuRes: Int) {
         val popup = PopupMenu(this, v)
         popup.menuInflater.inflate(menuRes, popup.menu)
 
-        popup.setOnMenuItemClickListener { menuItem: MenuItem ->
+
+       try {
+           val fields = popup.javaClass.getDeclaredFields()
+           for (field in fields) {
+               if ("mPopup" == field.name) {
+                   field.isAccessible = true
+                   val menuPopupHelper = field.get(popup)
+                   val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
+                   val setForceIcons = classPopupHelper.getMethod("setForceShowIcon", Boolean::class.java)
+                   setForceIcons.invoke(menuPopupHelper, true)
+                   break
+               }
+           }
+       } catch (e: Exception) {
+           e.printStackTrace()
+       }
+
+       popup.setOnMenuItemClickListener { menuItem: MenuItem ->
             when(menuItem.itemId) {
                 R.id.addMarkersInMap -> {
-                    allStateOff()
+                     setAllStatesFalse()
                     addMarkersInTheMap()
                     true
                 }
+
                 R.id.calculate_total_area ->{
                     if(manualMarkerList.size<3) {
                         Toast.makeText(this, "Need at least 3 Markers",Toast.LENGTH_SHORT).show()
                         return@setOnMenuItemClickListener true
                     }
 
-                        if (!inCalculateTotalArea)settingUpCalculateTotalAreaIn()
+                       settingUpCalculateTotalAreaIn()
 
                     Log.d("valures","$inCurrentToCenter  $inNearestEdge $inNearestBoundary $inCalculateTotalArea" )
 
@@ -339,9 +427,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                         Toast.makeText(this, "Need at least 3 Markers",Toast.LENGTH_SHORT).show()
                         return@setOnMenuItemClickListener true
                     }
-                    if (!inNearestBoundary)settingUpNearestBoundaryIn()
+                   settingUpNearestBoundaryIn()
                     findNearestBoundary()
-
                     true
                 }
                 R.id.find_nearest_marker ->{
@@ -349,7 +436,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                         Toast.makeText(this, "Need at least Markers",Toast.LENGTH_SHORT).show()
                         return@setOnMenuItemClickListener true
                     }
-                    if (!inNearestEdge)settingUpNearestMarkerIn()
+
+                    settingUpNearestMarkerIn()
                     findNearestMarker()
                     true
                 }
@@ -359,11 +447,16 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                         return@setOnMenuItemClickListener true
                     }
 
-                    if (!inCurrentToCenter)settingUpCurrentToCenterIn()
+                    settingUpCurrentToCenterIn()
                     findCurrentPointToCenterPoint()
                     true
                 }
 
+               R.id.Delete_All -> {
+                   deleteAllData()
+                   resetApp()
+                   true
+               }
                 else -> false
             }
         }
@@ -373,6 +466,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         // Show the popup menu.
         popup.show()
     }
+
+     private fun addSingleLatLngList(newLatLNgEntity: LatLangEntity) =lifecycleScope.launch(Dispatchers.IO) {   viewModel.addLatLng(latLangEntity = newLatLNgEntity)}
+     private fun deleteAllData() =lifecycleScope.launch(Dispatchers.IO) {   viewModel.deleteAllData()}
+
     private fun settingUpCurrentToCenterIn() {
         inCalculateTotalArea = false
         inNearestEdge = false
@@ -381,8 +478,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     }
     private fun settingUpNearestMarkerIn() {
         inCalculateTotalArea = false
-        inNearestEdge = false
-        inNearestBoundary = true
+        inNearestEdge = true
+        inNearestBoundary = false
         inCurrentToCenter = false
     }
 
@@ -400,38 +497,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         inCurrentToCenter = false
     }
 
-    private fun allStateOff() {
-        viewModel.setLiveFlagFalse()
-    }
 
-    private fun settingUpCurrentToCenterLocationState() {
-        viewModel.setCurrentToCenterLiveFlagTrue()
-        viewModel.setNearestMarkerLiveFlagFalse()
-        viewModel.setNearestBoundaryLiveFlagFalse()
-        viewModel.setCalculateAreaLiveFlagFalse()
-    }
-
-    private fun settingUpNearestMarkerState() {
-        viewModel.setCurrentToCenterLiveFlagFalse()
-        viewModel.setNearestMarkerLiveFlagTrue()
-        viewModel.setNearestBoundaryLiveFlagFalse()
-        viewModel.setCalculateAreaLiveFlagFalse()
-
-    }
-
-    private fun settingUpNearestEdgeState() {
-        viewModel.setCurrentToCenterLiveFlagFalse()
-        viewModel.setNearestMarkerLiveFlagFalse()
-        viewModel.setNearestBoundaryLiveFlagTrue()
-        viewModel.setCalculateAreaLiveFlagFalse()
-    }
-
-    private fun settingUpCalculateTotalAreaState() {
-        viewModel.setCurrentToCenterLiveFlagFalse()
-        viewModel.setNearestMarkerLiveFlagFalse()
-        viewModel.setNearestBoundaryLiveFlagFalse()
-        viewModel.setCalculateAreaLiveFlagTrue()
-    }
 
     @SuppressLint("DefaultLocale")
     private fun findCurrentPointToCenterPoint() {
@@ -464,14 +530,13 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         )
         Log.d("disatance" ,"$distance")
 
-        viewModel.isLive.observe(this) { live ->
-           Log.d("live","$live")
+     if(viewModel.isLive.value == true){
 
-            if (distance <= 10.00 && live && !serviceStarted) {
+            if (distance <= 10.00 && !serviceStarted) {
                 startForegroundService(Intent(this, VibrationService::class.java))
                 serviceStarted = true
             }
-            if(distance >= 10.00 && !live && serviceStarted) {
+            if(distance >= 10.00 && !serviceStarted) {
             stopService(Intent(this, VibrationService::class.java))
             serviceStarted = false
         }
@@ -516,19 +581,18 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 nearestPoint = point
             }
         }
-        viewModel.isLive.observe(this) { live ->
-            Log.d("live","$live")
 
-            if (shortestDistance <= 10.00 && live && !serviceStarted) {
+        if(viewModel.isLive.value == true){
+
+            if (shortestDistance <= 10.00 && !serviceStarted) {
                 Log.d("intetent","servieces")
                 startForegroundService(Intent(this, VibrationService::class.java))
                 serviceStarted = true
             }
-            if(shortestDistance >= 10.00 && !live && serviceStarted) {
+            if(shortestDistance >= 10.00 && serviceStarted) {
             stopService(Intent(this, VibrationService::class.java))
             serviceStarted = false
         }
-
 
         }
         val area = calculatePolygonArea(manualMarkerList)
@@ -590,14 +654,14 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 nearestPoint = pointOnEdge
             }
         }
-        viewModel.isLive.observe(this) { live ->
-            Log.d("live","$live")
 
-            if (shortestDistance <= 10.00 && live && !serviceStarted) {
+        if(viewModel.isLive.value == true){
+
+            if (shortestDistance <= 10.00 &&  !serviceStarted) {
                 startForegroundService(Intent(this, VibrationService::class.java))
                 serviceStarted = true
             }
-            if(shortestDistance >= 10.00 && !live && serviceStarted) {
+            if(shortestDistance >= 10.00 &&  serviceStarted) {
                 stopService(Intent(this, VibrationService::class.java))
                 serviceStarted = false
             }
@@ -652,6 +716,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
 
             nearestPointMarker = gMap.addMarker(
+
                 MarkerOptions()
                     .position(centroid)
                     .title("Area: %.2f sq.m".format(area))
@@ -726,21 +791,20 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                         animationFlag = !animationFlag
                     }
                     //setting up for only one action
-                    if(viewModel.isLive.value == true){
-              Log.d("is this live" ,"${viewModel.isLive.value}")
-                        if(viewModel.nearestMarkerLive.value == false && viewModel.currentToCenter.value == false && viewModel.nearestBoundaryLive.value == true && manualMarkerList.size>=3  && viewModel.calculateTotalArea.value==false){
+
+                        if (viewModel.isLive.value == true && inNearestBoundary) {
                             findNearestBoundary()
 
                         }
-                        if(viewModel.nearestMarkerLive.value == true && viewModel.currentToCenter.value == false && viewModel.nearestBoundaryLive.value == false && manualMarkerList.size>=3  && viewModel.calculateTotalArea.value==false){
+                        if (viewModel.isLive.value == true && inNearestEdge) {
                             findNearestMarker()
                         }
-                        if(viewModel.nearestMarkerLive.value == false && viewModel.currentToCenter.value == true && viewModel.nearestBoundaryLive.value == false && manualMarkerList.size>=3  && viewModel.calculateTotalArea.value==false){
+                        if (viewModel.isLive.value == true && inCurrentToCenter) {
                             findCurrentPointToCenterPoint()
                         }
 
                     }
-                }
+
             }
         }
         gMap.isMyLocationEnabled = true
@@ -855,34 +919,34 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
           markersList.add(tempMarker!!)
 
             // Draw lines between markers
-            drawLinesBetweenMarkers()
+            drawLinesBetweenMarkers(manualMarkerList)
 
             // Draw the polygon if there are at least 3 markers
             if (manualMarkerList.size >= 3) {
-                drawPolygon()
+                drawPolygon(manualMarkerList)
             }
         }
     }
 
 
     // Function to draw lines between markers
-    private fun drawLinesBetweenMarkers() {
+    private fun drawLinesBetweenMarkers(markerList : List<LatLng>) {
         // Clear existing polylines
         gMap.clear()
 
         // Add all markers to the map
-        for (marker in manualMarkerList) {
-            gMap.addMarker(MarkerOptions().position(marker).title("Marker ${manualMarkerList.indexOf(marker)}"))
+        for (marker in markerList) {
+            gMap.addMarker(MarkerOptions().position(marker).title("Marker ${markerList.indexOf(marker)}"))
         }
 
         // Draw lines between markers
         polyline = PolylineOptions()
-        for (marker in manualMarkerList) {
+        for (marker in markerList) {
             polyline?.add(marker)
         }
         // Close the polygon by connecting the last point to the first point
-        if (manualMarkerList.size >= 3) {
-            polyline?.add(manualMarkerList[0])
+        if (markerList.size >= 3) {
+            polyline?.add(markerList[0])
         }
         polyline?.width(5f) // Set the width of the line
         polyline?.color(Color.BLUE) // Set the color of the line
@@ -892,14 +956,14 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     }
 
     // Function to draw the polygon
-    private fun drawPolygon() {
+    private fun drawPolygon(markerList : List<LatLng>) {
 
         val polygonOptions = PolygonOptions()
-        for (marker in manualMarkerList) {
+        for (marker in markerList) {
             polygonOptions.add(marker)
         }
         // Close the polygon by connecting the last point to the first point
-        polygonOptions.add(manualMarkerList[0])
+        polygonOptions.add(markerList[0])
         polygonOptions.strokeWidth(5f) // Set the stroke width of the polygon
         polygonOptions.strokeColor(Color.RED) // Set the stroke color
         polygonOptions.fillColor(Color.argb(50, 255, 0, 0)) // Set the fill color with transparency
@@ -935,11 +999,11 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         if (manualMarkerList.size >= 3 && !isPolygon(manualMarkerList)) {
 
             Toast.makeText(this, "Markers do not form a polygon!", Toast.LENGTH_SHORT).show()
-            drawLinesBetweenMarkers()
+            drawLinesBetweenMarkers(manualMarkerList)
 
             // Draw the polygon if there are at least 3 markers
             if (manualMarkerList.size >= 3) {
-                drawPolygon()
+                drawPolygon(manualMarkerList)
             }
             return
         } else {
@@ -956,11 +1020,11 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
 
             // Draw lines between markers
-            drawLinesBetweenMarkers()
+            drawLinesBetweenMarkers(manualMarkerList)
 
             // Draw the polygon if there are at least 3 markers
             if (manualMarkerList.size >= 3) {
-                drawPolygon()
+                drawPolygon(manualMarkerList)
             }
         }
     }

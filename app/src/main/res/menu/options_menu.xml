@@ -1,17 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
 <item android:id="@+id/addMarkersInMap"
-    android:title="@string/add_markers" />
+    android:title="@string/add_markers"
+    android:icon="@drawable/baseline_add_location_alt_24"/>
 
     <item android:id="@+id/calculate_total_area"
-        android:title="@string/calculate_area" />
+        android:title="@string/calculate_area"
+        android:icon="@drawable/total_area"
+        app:showAsAction="always"/>
 
     <item android:id="@+id/find_nearestEdge"
-        android:title="@string/find_nearest_edge" />
+        android:title="@string/find_nearest_edge"
+        android:icon="@drawable/arrow_and_edge_24px"
+        app:showAsAction="always"/>
     <item android:id="@+id/find_nearest_marker"
-        android:title="@string/find_nearest_marker" />
+        android:title="@string/find_nearest_marker"
+        android:icon="@drawable/arrow_outward_24px"
+        app:showAsAction="always"/>
     <item android:id="@+id/current_to_center_point"
-        android:title="@string/current_location_to_center_point" />
+        android:title="@string/current_location_to_center_point"
+        android:icon="@drawable/prompt_suggestion_24px"
+        app:showAsAction="always"/>
+    <item android:id="@+id/Delete_All"
+        android:title="@string/delete_all_areas"
+        android:icon="@drawable/baseline_delete_forever_24"
+        app:showAsAction="always"/>
+
 
 </menu>

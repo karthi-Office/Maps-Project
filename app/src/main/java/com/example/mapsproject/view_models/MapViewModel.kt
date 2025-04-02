@@ -3,11 +3,13 @@ package com.example.mapsproject.view_models
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.mapsproject.model.LatLangEntity
+import com.example.mapsproject.repo.LatLngRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class MapViewModel @Inject constructor() : ViewModel() {
+class MapViewModel @Inject constructor(private val repo : LatLngRepository) : ViewModel() {
          val optionLiveData = MutableLiveData(false)
     fun setMarkerFlagTrue() { optionLiveData.value = true }
     fun setMarkerFlagFalse() { optionLiveData.value = false }
@@ -23,28 +25,17 @@ class MapViewModel @Inject constructor() : ViewModel() {
     fun setLiveFlagTrue() { isLive.value = true }
     fun setLiveFlagFalse() { isLive.value = false }
 
-    // Calculate nearest boundary live data
-    val nearestBoundaryLive = MutableLiveData(false)
-    fun setNearestBoundaryLiveFlagTrue() { nearestBoundaryLive.value = true }
-    fun setNearestBoundaryLiveFlagFalse() { nearestBoundaryLive.value = false }
-
-    // Calculate nearest Marker live data
-    val nearestMarkerLive = MutableLiveData(false)
-    fun setNearestMarkerLiveFlagTrue() { nearestMarkerLive.value = true }
-    fun setNearestMarkerLiveFlagFalse() { nearestMarkerLive.value = false }
 
 
-    // Calculate nearest Marker live data
-    val currentToCenter = MutableLiveData(false)
-    fun setCurrentToCenterLiveFlagTrue() { currentToCenter.value = true }
-    fun setCurrentToCenterLiveFlagFalse() { currentToCenter.value = false }
+   //DB actions
 
+//    adding one set  of latLng
+    fun addLatLng(latLangEntity: LatLangEntity) = repo.insertLatLngDetails(latLangEntity)
 
-//calculate total area
-    val calculateTotalArea = MutableLiveData(false)
-    fun setCalculateAreaLiveFlagTrue() { calculateTotalArea.value = true }
-    fun setCalculateAreaLiveFlagFalse() { calculateTotalArea.value = false }
+    //Getting multiple latLng details Db
+    val allLiveLatLng = repo.getAllLatLang()
 
-
+    //Deleting all data
+    fun deleteAllData() = repo.deleteAllData()
 
 }

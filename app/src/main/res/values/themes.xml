@@ -75,6 +75,7 @@
     </style>
     <style name="outlinedButton" parent="Widget.Material3.Button.IconButton">
         <item name="shapeAppearanceOverlay">@style/fabShape</item>
+        <item name="backgroundTint">@color/design_default_color_on_primary</item>
     </style>
     <style name="card" parent="Widget.Material3.CardView.Elevated">
         <item name="shapeAppearance">@style/addLocationfab</item>

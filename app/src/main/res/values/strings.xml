@@ -19,4 +19,7 @@
     <string name="total_area">Total Area</string>
     <string name="value_1">value 1</string>
     <string name="distance">Distance</string>
+    <string name="add_the_total_area">Add the total Area</string>
+    <string name="name">Name</string>
+    <string name="delete_all_areas">Delete All Areas</string>
 </resources>

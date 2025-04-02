@@ -14,10 +14,10 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintVertical_bias="0.0"
         tools:context=".MapsActivity" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -31,7 +31,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:shapeAppearanceOverlay="@style/fabShape" />
 
-<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_area_into_db"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_20sdp"
+        android:backgroundTint="@color/md_theme_secondaryContainer_mediumContrast"
+        android:contentDescription="@string/fabbtn"
+        android:src="@drawable/add_location_alt_24px"
+        app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintVertical_bias=".85"
+        app:shapeAppearanceOverlay="@style/addLocationfab" />
+
+    <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
 <!--        android:id="@+id/addMarkers"-->
 <!--        android:layout_width="wrap_content"-->
 <!--        android:layout_height="wrap_content"-->
@@ -89,7 +105,6 @@
                 android:padding="@dimen/_3sdp"
                 android:text="@string/clear_marker"
                 app:layout_constraintEnd_toStartOf="@id/clearAllMarker"
-                app:layout_constraintDimensionRatio="16:10"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -103,7 +118,6 @@
                 android:padding="@dimen/_3sdp"
                 android:text="@string/clear_all_markers"
                 app:layout_constraintEnd_toStartOf="@id/close_marker"
-                app:layout_constraintDimensionRatio="16:10"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toEndOf="@id/clearMarker" />
@@ -117,10 +131,11 @@
                 android:padding="@dimen/_3sdp"
                 android:text="@string/close_marker_options"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintDimensionRatio="16:10"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toEndOf="@id/clearAllMarker" />
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

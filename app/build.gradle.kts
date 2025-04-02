@@ -7,6 +7,7 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+
 }
 
 android {
@@ -22,7 +23,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    defaultConfig {
+        vectorDrawables.useSupportLibrary = true
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -70,7 +73,20 @@ dependencies {
     implementation (libs.android.maps.utils)
     //hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
-    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
+    ksp("com.google.dagger:hilt-android-compiler:2.51.1")
+
+    //room
+    val room_version = "2.6.1"
+
+    implementation("androidx.room:room-runtime:$room_version")
+
+    // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
+    // See Add the KSP plugin to your project
+    ksp("androidx.room:room-compiler:$room_version")
+
+
+    //gson
+    implementation ("com.google.code.gson:gson:2.10.1")
 }
 secrets {
     // To add your Maps API key to this project:
@@ -82,7 +98,4 @@ secrets {
     // A properties file containing default secret values. This file can be
     // checked in version control.
     defaultPropertiesFileName = "local.defaults.properties"
-}
-kapt {
-    correctErrorTypes = true
 }
