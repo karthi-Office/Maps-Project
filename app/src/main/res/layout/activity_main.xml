@@ -17,7 +17,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintVertical_bias="0.0"
         tools:context=".MapsActivity" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -25,167 +25,235 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_10sdp"
+        android:backgroundTint="@color/md_theme_surfaceContainer_mediumContrast"
         android:contentDescription="@string/fabbtn"
         android:src="@drawable/baseline_location_pin_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.98"
-        app:layout_constraintVertical_bias="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1"
         app:shapeAppearanceOverlay="@style/fabShape" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_area_into_db"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/md_theme_secondaryContainer_mediumContrast"
+        android:alpha="1"
+        android:backgroundTint="@color/md_theme_surfaceContainer_mediumContrast"
         android:contentDescription="@string/fabbtn"
-        android:scaleY=".7"
-        android:scaleX=".7"
-        android:src="@drawable/add_location_alt_24px"
-        app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:alpha=".8"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintHorizontal_bias=".02"
-        app:layout_constraintVertical_bias=".9"
-        app:shapeAppearanceOverlay="@style/addLocationfab" />
+        android:scaleX=".9"
+        android:scaleY=".9"
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_markers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/md_theme_onSecondaryContainer_highContrast"
-        android:contentDescription="@string/fabbtn"
-        android:src="@drawable/add_marker"
-        android:alpha=".9"
-        android:scaleY=".7"
-        android:scaleX=".7"
+        android:src="@drawable/add_task_24px"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias=".02"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintHorizontal_bias=".98"
-        app:layout_constraintVertical_bias=".17"
-        app:shapeAppearanceOverlay="@style/addLocationfab" />
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/calculate_total_area"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/md_theme_surfaceContainerHighest_highContrast"
-        android:contentDescription="@string/fabbtn"
-        android:src="@drawable/total_area"
-        android:alpha=".9"
-        android:scaleY=".7"
-        android:scaleX=".7"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias=".9"
+        app:shapeAppearance="@style/addLocationfab" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/utills_card"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:backgroundTint="@android:color/transparent"
+        app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:19"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias=".97"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintHorizontal_bias=".98"
-        app:layout_constraintVertical_bias=".23"
-        app:shapeAppearanceOverlay="@style/addLocationfab" />
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/nearest_boundary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/md_theme_tertiaryFixedDim"
-        android:contentDescription="@string/fabbtn"
-        android:src="@drawable/arrow_and_edge_24px"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:alpha=".9"
-        android:scaleY=".7"
-        android:scaleX=".7"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintHorizontal_bias=".98"
-        app:layout_constraintVertical_bias=".29"
-        app:shapeAppearanceOverlay="@style/addLocationfab" />
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/nearest_marker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/md_theme_primaryFixedDim"
-        android:contentDescription="@string/fabbtn"
-        android:alpha=".9"
-        android:scaleY=".7"
-        android:scaleX=".7"
-        android:src="@drawable/arrow_outward_24px"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintHorizontal_bias=".98"
-        app:layout_constraintVertical_bias=".35"
-        app:shapeAppearanceOverlay="@style/addLocationfab" />
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/current_location_to_center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:alpha=".9"
-        android:scaleY=".7"
-        android:scaleX=".7"
-        android:backgroundTint="@color/md_theme_primaryFixed_mediumContrast"
-        android:contentDescription="@string/fabbtn"
-        android:src="@drawable/baseline_home_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintHorizontal_bias=".98"
-        app:layout_constraintVertical_bias=".41"
-        app:shapeAppearanceOverlay="@style/addLocationfab" />
+        app:strokeWidth="0dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card1"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:alpha="1"
+                android:backgroundTint="@color/md_theme_surfaceDim"
+                app:cardElevation="4dp"
+                app:layout_constraintBottom_toTopOf="@id/card2"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias=".98"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias=".3"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:shapeAppearance="@style/topFab"
+                app:strokeWidth="0dp">
+
+                <ImageButton
+                    android:id="@+id/add_markers"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/white"
+                    android:contentDescription="@string/fabbtn"
+                    android:src="@drawable/add_marker" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card2"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:alpha="1"
+                android:backgroundTint="@color/md_theme_surfaceDim"
+                app:cardElevation="4dp"
+                app:layout_constraintBottom_toTopOf="@id/card3"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias=".98"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card1"
+                app:shapeAppearance="@style/zeroFab"
+
+                app:strokeWidth="0dp">
+
+                <ImageButton
+                    android:id="@+id/calculate_total_area"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/white"
+                    android:src="@drawable/total_area" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card3"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:alpha="1"
+                android:backgroundTint="@color/md_theme_surfaceDim"
+                app:cardElevation="4dp"
+                app:layout_constraintBottom_toTopOf="@id/card4"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias=".98"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card2"
+                app:shapeAppearance="@style/zeroFab"
+
+                app:strokeWidth="0dp">
+
+                <ImageButton
+                    android:id="@+id/nearest_boundary"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/white"
+                    android:contentDescription="@string/delete_all_areas"
+
+                    android:src="@drawable/arrow_and_edge_24px" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card4"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:alpha="1"
+                android:backgroundTint="@color/md_theme_surfaceDim"
+                app:cardElevation="4dp"
+                app:layout_constraintBottom_toTopOf="@id/card5"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias=".98"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card3"
+                app:layout_constraintVertical_bias=".35"
+                app:shapeAppearanceOverlay="@style/zeroFab"
+                app:strokeWidth="0dp">
+
+                <ImageButton
+                    android:id="@+id/nearest_marker"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/white"
+                    android:contentDescription="@string/fabbtn"
+                    android:src="@drawable/baseline_arrow_outward_24" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card5"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:alpha="1"
+                android:backgroundTint="@color/md_theme_surfaceDim"
+                app:cardElevation="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias=".98"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card4"
+                app:shapeAppearance="@style/bottomFab"
+                app:strokeWidth="0dp">
+
+                <ImageButton
+                    android:id="@+id/current_location_to_center"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/white"
+                    android:contentDescription="@string/fabbtn"
+                    android:src="@drawable/baseline_home_24" />
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/options"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:scaleY=".7"
-        android:scaleX=".7"
-        android:backgroundTint="@color/rose"
+        android:backgroundTint="@color/md_theme_surfaceContainer_mediumContrast"
         android:contentDescription="@string/fabbtn"
+        android:foregroundGravity="center"
         android:src="@drawable/lists_24px"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:alpha=".9"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHeight_percent=".1"
         app:layout_constraintHorizontal_bias="0.98"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias=".06"
+        app:layout_constraintWidth_percent=".2"
         app:shapeAppearanceOverlay="@style/addLocationfab" />
 
     <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--        android:id="@+id/addMarkers"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="@dimen/_20sdp"-->
-<!--        android:layout_marginBottom="@dimen/_40sdp"-->
-<!--        android:contentDescription="@string/fabbtn"-->
-<!--        android:src="@drawable/baseline_add_location_alt_24"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:shapeAppearanceOverlay="@style/addLocationfab" />-->
+    <!--        android:id="@+id/addMarkers"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginStart="@dimen/_20sdp"-->
+    <!--        android:layout_marginBottom="@dimen/_40sdp"-->
+    <!--        android:contentDescription="@string/fabbtn"-->
+    <!--        android:src="@drawable/baseline_add_location_alt_24"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:shapeAppearanceOverlay="@style/addLocationfab" />-->
 
-<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--        android:id="@+id/menu"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_marginTop="@dimen/_20sdp"-->
-<!--        android:contentDescription="@string/fabbtn"-->
-<!--        android:foregroundGravity="left"-->
-<!--        android:src="@drawable/baseline_menu_24"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHeight_percent=".07"-->
-<!--        app:layout_constraintHorizontal_bias=".95"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintVertical_bias=".02"-->
-<!--        app:layout_constraintWidth_percent=".14"-->
-<!--        app:shapeAppearanceOverlay="@style/addLocationfab" />-->
+    <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+    <!--        android:id="@+id/menu"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:layout_marginTop="@dimen/_20sdp"-->
+    <!--        android:contentDescription="@string/fabbtn"-->
+    <!--        android:foregroundGravity="left"-->
+    <!--        android:src="@drawable/baseline_menu_24"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintHeight_percent=".07"-->
+    <!--        app:layout_constraintHorizontal_bias=".95"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        app:layout_constraintVertical_bias=".02"-->
+    <!--        app:layout_constraintWidth_percent=".14"-->
+    <!--        app:shapeAppearanceOverlay="@style/addLocationfab" />-->
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/optionsCard"
@@ -195,8 +263,8 @@
         app:cardElevation="@dimen/_3sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="16:4"
-        app:layout_constraintEnd_toStartOf="@id/current_location_to_center"
-        app:layout_constraintHorizontal_bias="0.3"
+        app:layout_constraintEnd_toStartOf="@id/currentLocation"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias=".98"
@@ -214,8 +282,9 @@
                 android:autoSizeTextType="uniform"
                 android:padding="@dimen/_3sdp"
                 android:text="@string/clear_marker"
-                app:layout_constraintEnd_toStartOf="@id/clearAllMarker"
+                app:layout_constraintHorizontal_weight=".4"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/clearAllMarker"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -226,29 +295,35 @@
                 android:layout_margin="@dimen/_2sdp"
                 android:autoSizeTextType="uniform"
                 android:padding="@dimen/_3sdp"
-                android:text="@string/clear_all_markers"
-                app:layout_constraintEnd_toStartOf="@id/close_marker"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/clearMarker" />
+                app:layout_constraintHorizontal_weight=".4"
 
-            <TextView
+                android:text="@string/clear_all_markers"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/close_marker"
+                app:layout_constraintStart_toEndOf="@id/clearMarker"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
                 android:id="@+id/close_marker"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_margin="@dimen/_2sdp"
+                android:layout_margin="@dimen/_10sdp"
                 android:autoSizeTextType="uniform"
-                android:padding="@dimen/_3sdp"
+                app:layout_constraintDimensionRatio="1:1"
+                android:scaleType="fitXY"
+                app:layout_constraintHorizontal_weight=".2"
+
+                android:src="@drawable/prompt_suggestion_24px"
                 android:text="@string/close_marker_options"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/clearAllMarker" />
-
+                app:layout_constraintStart_toEndOf="@id/clearAllMarker"
+                app:layout_constraintTop_toTopOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cancelCard"
         style="@style/optons"
@@ -263,20 +338,23 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias=".96"
         app:layout_constraintWidth_percent=".3">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <TextView
+                android:id="@+id/cancelDottedCalculation"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:id="@+id/cancelDottedCalculation"
-                android:text="@string/cancel"
                 android:autoSizeTextType="uniform"
                 android:gravity="center"
-                app:layout_constraintStart_toStartOf="parent"
+                android:padding="@dimen/_7sdp"
+                android:text="@string/cancel"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -285,17 +363,17 @@
         style="@style/data_card"
         android:layout_width="0dp"
         android:layout_height="0dp"
-    app:strokeWidth="1dp"
-      android:alpha=".7"
+        android:alpha=".7"
+        app:cardBackgroundColor="@color/md_theme_surfaceContainerHigh_mediumContrast"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="4:3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:cardBackgroundColor="@color/md_theme_surfaceContainerHigh_mediumContrast"
         app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias=".8"
-        app:layout_constraintWidth_percent=".5">
+        app:layout_constraintWidth_percent=".5"
+        app:strokeWidth="1dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -306,128 +384,133 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:rotation="90"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:dividerThickness="@dimen/_1sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:dividerThickness="@dimen/_1sdp" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/first_title"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:text="@string/total_area"
-                android:gravity="center"
-                android:textStyle="bold"
-                android:padding="@dimen/_3sdp"
-                android:textColor="@color/md_theme_scrim_mediumContrast"
-                app:layout_constraintDimensionRatio="5:3"
                 android:autoSizeTextType="uniform"
-                app:layout_constraintTop_toTopOf="parent"
+                android:gravity="center"
+
+                android:padding="@dimen/_3sdp"
+                android:text="@string/total_area"
+                android:textColor="@color/md_theme_scrim_mediumContrast"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@id/second_title"
+                app:layout_constraintDimensionRatio="5:3"
+                app:layout_constraintEnd_toStartOf="@id/value_1"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/value_1"/>
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
                 android:id="@+id/value_1"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:text="@string/value_1"
-                android:textStyle="italic"
-                android:textColor="@color/md_theme_scrim_mediumContrast"
-                app:layout_constraintDimensionRatio="5:3"
-                android:gravity="center"
                 android:autoSizeTextType="uniform"
-                app:layout_constraintTop_toTopOf="parent"
+                android:gravity="center"
+                android:padding="@dimen/_3sdp"
+                android:text="@string/value_1"
+                android:textColor="@color/md_theme_scrim_mediumContrast"
+                android:textStyle="italic"
                 app:layout_constraintBottom_toTopOf="@id/value_2"
+                app:layout_constraintDimensionRatio="5:3"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/first_title"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/second_title"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:text="@string/title"
-                app:layout_constraintDimensionRatio="5:3"
-                android:textColor="@color/md_theme_scrim_mediumContrast"
-                android:gravity="center"
-                android:textStyle="bold"
                 android:autoSizeTextType="uniform"
-                app:layout_constraintTop_toBottomOf="@id/first_title"
+                android:gravity="center"
+                android:padding="@dimen/_3sdp"
+                android:text="@string/title"
+                android:textColor="@color/md_theme_scrim_mediumContrast"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="5:3"
+                app:layout_constraintEnd_toStartOf="@id/value_2"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/value_2"/>
+                app:layout_constraintTop_toBottomOf="@id/first_title" />
+
             <TextView
                 android:id="@+id/value_2"
                 android:layout_width="0dp"
-                android:textColor="@color/md_theme_scrim_mediumContrast"
                 android:layout_height="0dp"
-                android:text="@string/distance"
-                android:textStyle="italic"
-                app:layout_constraintTop_toBottomOf="@id/value_1"
-                app:layout_constraintDimensionRatio="5:3"
-                android:gravity="center"
                 android:autoSizeTextType="uniform"
+                android:gravity="center"
+                android:padding="@dimen/_3sdp"
+                android:text="@string/distance"
+                android:textColor="@color/md_theme_scrim_mediumContrast"
+                android:textStyle="italic"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="5:3"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/second_title"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/value_1" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </com.google.android.material.card.MaterialCardView>
+
     <com.google.android.material.card.MaterialCardView
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:alpha=".8"
+        app:cardBackgroundColor="@color/md_theme_surfaceContainerHigh_mediumContrast"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="16:6"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias=".1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent=".3"
         app:layout_constraintVertical_bias=".06"
-        app:layout_constraintHorizontal_bias=".1"
-        app:cardBackgroundColor="@color/md_theme_surfaceContainerHigh_mediumContrast"
-        android:alpha=".8"
-        >
+        app:layout_constraintWidth_percent=".3">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <TextView
                 android:id="@+id/go_live_tv"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:text="@string/go_live"
-                android:textStyle="bold"
-                android:textColor="@color/md_theme_scrim_mediumContrast"
-                android:gravity="center"
-                app:layout_constraintHorizontal_weight=".4"
                 android:autoSizeTextType="uniform"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                android:gravity="center"
+                android:text="@string/go_live"
+                android:textColor="@color/md_theme_scrim_mediumContrast"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/live_button"/>
+                app:layout_constraintEnd_toStartOf="@id/live_button"
+                app:layout_constraintHorizontal_weight=".4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
 
             <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/live_button"
+                style="@style/optons"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:autoSizeTextType="uniform"
-                android:elevation="@dimen/_5sdp"
-                style="@style/optons"
-                android:textStyle="bold"
-                app:layout_constraintHorizontal_weight=".55"
                 android:layout_marginEnd="@dimen/_2sdp"
+                android:autoSizeTextType="uniform"
                 android:checked="true"
-                app:layout_constraintStart_toEndOf="@id/go_live_tv"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:elevation="@dimen/_5sdp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight=".55"
+                app:layout_constraintStart_toEndOf="@id/go_live_tv"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

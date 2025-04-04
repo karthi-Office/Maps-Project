@@ -71,7 +71,7 @@
     <style name="addLocationfab" parent="ShapeAppearance.Material3.MediumComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerRadius">@dimen/_36sdp</item>
-        <item name="cornerSize">30%</item>
+        <item name="cornerSize">10%</item>
     </style>
     <style name="outlinedButton" parent="Widget.Material3.Button.IconButton">
         <item name="shapeAppearanceOverlay">@style/fabShape</item>
@@ -79,5 +79,29 @@
     </style>
     <style name="card" parent="Widget.Material3.CardView.Elevated">
         <item name="shapeAppearance">@style/addLocationfab</item>
+    </style>
+
+    <style name="topFab" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamilyTopLeft">rounded</item>
+        <item name="cornerFamilyTopRight">rounded</item>
+        <item name="cornerRadius">@dimen/_36sdp</item>
+        <item name="cornerSizeBottomLeft">0%</item>
+        <item name="cornerSizeBottomRight">0%</item>
+        <item name="cornerSizeTopRight">10%</item>
+        <item name="cornerSizeTopLeft">10%</item>
+
+    </style>
+    <style name="bottomFab" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamilyBottomLeft">rounded</item>
+        <item name="cornerFamilyBottomRight">rounded</item>
+        <item name="cornerRadius">@dimen/_36sdp</item>
+        <item name="cornerSizeTopRight">0%</item>
+        <item name="cornerSizeTopLeft">0%</item>
+        <item name="cornerSizeBottomLeft">10%</item>
+        <item name="cornerSizeBottomRight">10%</item>
+
+    </style>
+    <style name="zeroFab" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerSize">0%</item>
     </style>
 </resources>

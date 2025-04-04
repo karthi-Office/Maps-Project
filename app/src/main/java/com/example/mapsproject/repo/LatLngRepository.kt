@@ -13,4 +13,5 @@ class LatLngRepository @Inject constructor(private val listOfLatLangDoa: listOfL
 
     fun deleteAllData() = listOfLatLangDoa.deleteTable()
 
+    fun getCount() : LiveData<Int> = listOfLatLangDoa.getCount()
 }

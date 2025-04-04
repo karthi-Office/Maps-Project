@@ -15,6 +15,11 @@ class MapViewModel @Inject constructor(private val repo : LatLngRepository) : Vi
     fun setMarkerFlagFalse() { optionLiveData.value = false }
 
 
+// current location fetching
+    val currentLocationFetching = MutableLiveData(false)
+    fun setCurrentLocationFetchingFlagTrue() { optionLiveData.value = true }
+    fun setCurrentLocationFetchingFlagFalse() { optionLiveData.value = false }
+
 //    Calculation state
     val calculationLiveData = MutableLiveData(false)
     fun setCalculationFlagTrue() { calculationLiveData.value = true }
@@ -37,5 +42,8 @@ class MapViewModel @Inject constructor(private val repo : LatLngRepository) : Vi
 
     //Deleting all data
     fun deleteAllData() = repo.deleteAllData()
+    //get data count
+
+    val countLiveData : LiveData<Int> = repo.getCount()
 
 }

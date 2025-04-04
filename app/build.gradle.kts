@@ -87,6 +87,10 @@ dependencies {
 
     //gson
     implementation ("com.google.code.gson:gson:2.10.1")
+    //coroutine scope
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
 }
 secrets {
     // To add your Maps API key to this project:

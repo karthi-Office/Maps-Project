@@ -18,4 +18,7 @@ interface listOfLatLangDoa {
 
     @Query("DELETE from LISTOFLATLANGTABLE")
     fun deleteTable()
+
+    @Query("SELECT COUNT(*) FROM ListOfLatLangTable")
+     fun getCount() :LiveData<Int>
 }

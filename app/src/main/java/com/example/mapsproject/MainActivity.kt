@@ -16,14 +16,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.MenuRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.mapsproject.adapters.DbDataAdapter
 import com.example.mapsproject.databinding.ActivityMainBinding
 import com.example.mapsproject.model.LatLangEntity
 import com.example.mapsproject.services.VibrationService
@@ -52,6 +57,8 @@ import com.google.android.gms.maps.model.PolygonOptions
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.textfield.TextInputEditText
 import com.google.maps.android.data.Style
 import com.google.maps.android.ktx.awaitMap
@@ -82,13 +89,19 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private var serviceStarted = false
     private val handler = Handler(Looper.getMainLooper())
     private var progress = 0
-    private var personMarker: GroundOverlay? = null // Track the 3D person marker
+    private var personMarker: Marker? = null // Track the 3D person marker
+    private var currentLatLng : LatLng? =null
      private lateinit var dBData : List<LatLangEntity>
+     private lateinit var adapter : DbDataAdapter
+     private var dataCount = 0
 //    state
     private var inCalculateTotalArea = false
     private var inNearestBoundary = false
     private var inNearestEdge = false
     private var inCurrentToCenter = false
+    // current location icon
+
+
 
 
      private val viewModel : MapViewModel by viewModels()
@@ -105,7 +118,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         lifecycleScope.launch {
             val map = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
             gMap = map?.awaitMap() ?: return@launch
-//            setUpDataBaseMarker()
+
             applyMapStyle()
             checkLocationPermission()
             notificationPermissionEnable()
@@ -113,6 +126,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             calculationState()
             setUpIsLive()
             draggableEvent()
+            calculateCount()
+//            setupCurrentLocation()
 
         }
 
@@ -122,12 +137,14 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         binding.options.setOnClickListener { v: View ->
             showMenu(v, R.menu.options_menu)
         }
+       setFabToolTip(binding.options,"Menu")
 
 
         binding.addMarkers.setOnClickListener {
             setAllStatesFalse()
             addMarkersInTheMap()
         }
+        setFabToolTip(binding.addMarkers,"Click to Add Markers in Map. Tap the map to add markers ")
         //Total area
         binding.calculateTotalArea.setOnClickListener {
             if(manualMarkerList.size<3) {
@@ -141,6 +158,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
             calculateTheToatalArea()
         }
+        setFabToolTip(binding.calculateTotalArea,"Click button to calculate the total plot area")
         //nearest boundary
         binding.nearestBoundary.setOnClickListener {
             if(manualMarkerList.size<3) {
@@ -150,6 +168,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             settingUpNearestBoundaryIn()
             findNearestBoundary()
         }
+        setFabToolTip(binding.nearestBoundary,"Click button to find the nearest boundary")
+
         //nearest marker
         binding.nearestMarker.setOnClickListener {
             if(manualMarkerList.size<3) {
@@ -160,6 +180,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             settingUpNearestMarkerIn()
             findNearestMarker()
         }
+        setFabToolTip(binding.nearestMarker,"Click button to find the nearest edge")
+
         //current to center
         binding.currentLocationToCenter.setOnClickListener {
             if(manualMarkerList.size<3) {
@@ -170,6 +192,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             settingUpCurrentToCenterIn()
             findCurrentPointToCenterPoint()
         }
+        setFabToolTip(binding.currentLocationToCenter,"Click button to calculate current location to center point of plot area")
 
 
         //calculation cancel button
@@ -186,6 +209,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             animationFlag = true
             checkLocationPermission()
         }
+        setFabToolTip(binding.currentLocationToCenter,"Click the button to navigate to the current location")
 
 
 
@@ -233,7 +257,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                         latLangList = manualMarkerList
                     ))
                     dialog.dismiss()
-                    resetApp()
+//                    resetApp()
                 }
 
                 builder.setNegativeButton("Cancel") { dialog, _ ->
@@ -247,22 +271,63 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
 
             }else Toast.makeText(this,"Add At least 3 markers",Toast.LENGTH_SHORT).show()
-            Toast.makeText(this,"Added Into Data Base",Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this,"Added Into Data Base",Toast.LENGTH_SHORT).show()
         }
+              setFabToolTip(binding.addAreaIntoDb,"Click button save plot")
+    }
 
+    private fun calculateCount() {
+
+
+            viewModel.countLiveData.observe(this@MainActivity){
+                dataCount = it
+
+
+        }
+    }
+
+    private fun setFabToolTip(options: FloatingActionButton, s: String) {
+
+        ViewCompat.setTooltipText(options,s)
+    }
+    private fun setFabToolTip(options: ImageButton, s: String) {
+
+        ViewCompat.setTooltipText(options,s)
+    }
+    private fun setFabToolTip(options: MaterialSwitch, s: String) {
+
+        ViewCompat.setTooltipText(options,s)
     }
 
 
 
+//    private fun setupCurrentLocation() {
+//        viewModel.currentLocationFetching.observe(this){isLive->
+//            if(!isLive && personMarker!= null && currentLatLng != null){
+//                setUpCurrentLocation(currentLatLng!!)
+//            }
+//        }
+//    }
 
+//    private fun setUpCurrentLocation(currentLatLng: LatLng) {
+//        val personIcon = bitmapDescriptorFromVector(this,R.drawable.baseline_person_24)
+//        personMarker = gMap.addMarker(
+//            MarkerOptions()
+//                .position(currentLatLng)
+//                .icon(personIcon!!)
+//                .anchor(0.5f, 0.5f) // Center the icon
+//                .zIndex(100f) // Ensure it appears above other markers
+//
+//
+//        )
+//    }
+//
 
-    private fun setUpDataBaseMarker() {
-         resetApp()
-        viewModel.allLiveLatLng.observe(this){markerEntity->
-            markerEntity.forEach { places ->
-
+    private fun setUpDataBaseMarker(places : LatLangEntity) {
+//         resetApp()
                 if (places.latLangList.size > 2) {
                     Log.d("all data ", "$places")
+                    manualMarkerList = places.latLangList.toMutableList()
                     drawLinesBetweenMarkers(places.latLangList)
                     drawPolygon(places.latLangList)
                     val center = calculateCentroid(places.latLangList)
@@ -272,11 +337,27 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                             .title(places.locationName)
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                     )
+                    val currentZoom = gMap.cameraPosition.zoom
+                    val targetZoom = 20f
+
+                    val zoomThreshold = 2f
+
+                    val finalZoom = if (kotlin.math.abs(currentZoom - targetZoom) > zoomThreshold) {
+                        targetZoom
+                    } else {
+                        currentZoom
+                    }
+
+                    gMap.animateCamera(
+                        CameraUpdateFactory.newLatLngZoom(center, finalZoom),
+                        2000,
+                        null
+                    )
 
                 }
 
-            }
-        }
+
+
     }
 
     override fun onResume() {
@@ -313,39 +394,45 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             if(isChecked){
 
                 viewModel.setLiveFlagTrue()
+                binding.options.visibility = View.GONE
 
             }else{
                 stopService(Intent(this,VibrationService::class.java))
-                startProgressAnimation()
+//                startProgressAnimation()
                 viewModel.setLiveFlagFalse()
+                viewModel.setCalculationFlagFalse()
+                binding.options.visibility = View.VISIBLE
+
 
             }
             Log.d("livedata","${viewModel.isLive.value}")
+
         }
+        setFabToolTip(binding.liveButton,"Click the button to fetch data live")
 
     }
 
-    private fun startProgressAnimation() {
-        progress = 0
-        binding.liveButton.isEnabled = false // Disable the switch during progress
-
-        // Animate Progress
-        handler.post(object : Runnable {
-            override fun run() {
-                if (progress < 100) {
-                    progress += 2
-                    // Apply progress as track tint to visualize progress
-                    val progressFraction = progress / 100f
-                    val color = interpolateColor(0xFFB0BEC5.toInt(), 0xFF4CAF50.toInt(), progressFraction)
-                    binding.liveButton.trackTintList = android.content.res.ColorStateList.valueOf(color)
-                    handler.postDelayed(this, 100)
-                } else {
-                    binding.liveButton.isEnabled = true
-                    binding.liveButton.trackTintList = null // Reset to default color
-                }
-            }
-        })
-    }
+//    private fun startProgressAnimation() {
+//        progress = 0
+//        binding.liveButton.isEnabled = false // Disable the switch during progress
+//
+//        // Animate Progress
+//        handler.post(object : Runnable {
+//            override fun run() {
+//                if (progress < 100) {
+//                    progress += 2
+//                    // Apply progress as track tint to visualize progress
+//                    val progressFraction = progress / 100f
+//                    val color = interpolateColor(0xFFB0BEC5.toInt(), 0xFF4CAF50.toInt(), progressFraction)
+//                    binding.liveButton.trackTintList = android.content.res.ColorStateList.valueOf(color)
+//                    handler.postDelayed(this, 100)
+//                } else {
+//                    binding.liveButton.isEnabled = true
+//                    binding.liveButton.trackTintList = null // Reset to default color
+//                }
+//            }
+//        })
+//    }
 
     private fun interpolateColor(colorStart: Int, colorEnd: Int, fraction: Float): Int {
         val startA = (colorStart shr 24 and 0xff)
@@ -381,9 +468,9 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         //handling markers options
         viewModel.optionLiveData.observe(this) { flag ->
             binding.let {
-                it.optionsCard.visibility = if (flag) View.VISIBLE else View.GONE
+                it.optionsCard.visibility = if (flag ) View.VISIBLE else View.GONE
         //                it.addMarkers.visibility = if (flag) View.GONE else View.GONE
-                it.addAreaIntoDb.visibility = if (flag) View.VISIBLE else View.GONE
+                it.addAreaIntoDb.visibility = if (flag ) View.VISIBLE else View.GONE
                 if (flag) setUpOnClickListener() else gMap.setOnMapClickListener(null)
             }
         }
@@ -403,6 +490,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             } else {
                 // Clear the polygon if there are fewer than 3 markers
                 gMap.clear()
+//                viewModel.setCurrentLocationFetchingFlagFalse()
                 for (marker in manualMarkerList) {
                     gMap.addMarker(MarkerOptions().position(marker).title("Marker"))
                 }
@@ -417,12 +505,14 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         manualMarkerList.clear()
         markersList.clear()
         gMap.clear()
+//        viewModel.setCurrentLocationFetchingFlagFalse()
         setAllStatesFalse()
     }
 
     private fun resetApp(){
         markersList.clear()
         gMap.clear()
+//        viewModel.setCurrentLocationFetchingFlagFalse()
         manualMarkerList.clear()
         setAllStatesFalse()
         removeDottedLineAndMarkers()
@@ -455,8 +545,46 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             when(menuItem.itemId) {
                 R.id.show_list -> {
 
+
+                        if(dataCount > 0){
+                            val customView = LayoutInflater.from(this).inflate(R.layout.list_of_db_latlng, null)
+                            val recyclerView = customView.findViewById<RecyclerView>(R.id.recycler_view)
+
+                            val builder = MaterialAlertDialogBuilder(this)
+                            builder.setTitle("List Of Plots")
+                            builder.setMessage("Choose the plot to show in Map")
+                            builder.setView(customView)
+                            builder.setNegativeButton("Close") { dialog, which ->
+                                // Respond to positive button press
+
+                                dialog.dismiss()
+                                Toast.makeText(this,"No plot Chosen",Toast.LENGTH_SHORT).show()
+                            }
+                            // Create the dialog instance
+                            val dialog = builder.create()
+
+                            // Initialize adapter with item click listener
+                            adapter = DbDataAdapter { item ->
+                                setUpDataBaseMarker(item)
+                                dialog.dismiss()  // Close the dialog when an item is clicked
+                            }
+
+                            recyclerView.adapter = adapter
+                            recyclerView.layoutManager = LinearLayoutManager(this)
+
+                            viewModel.allLiveLatLng.observe(this) { data ->
+                                adapter.setData(data)
+                            }
+
+                            // Show the dialog
+                            dialog.show()
+                        }else{
+                            Toast.makeText(this,"No plots are saved ",Toast.LENGTH_SHORT).show()
+                        
+                    }
                     true
-                }
+
+            }
 
 
                R.id.Delete_All_Plots -> {
@@ -472,9 +600,9 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                        .setPositiveButton("Yes") { dialog, which ->
                            // Respond to positive button press
                            deleteAllData()
-                           resetApp()
+//                           resetApp()
                            dialog.dismiss()
-                           Toast.makeText(this,"Data base cleared",Toast.LENGTH_SHORT).show()
+                           Toast.makeText(this,"All plots are cleared successfully !",Toast.LENGTH_SHORT).show()
                        }
                        .show()
 
@@ -545,13 +673,13 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 .pattern(listOf(Dot(), Gap(20f)))
                 .width(10f)
         )
-      val icons =
-          bitmapDescriptorFromVector(this, R.drawable.baseline_person_24)
-        // Place Marker at Centroid
-        nearestPointMarker = gMap.addMarker(
-            MarkerOptions().position(centroid).title("Centroid")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-        )
+//      val icons =
+////          bitmapDescriptorFromVector(this, R.drawable.baseline_person_24)
+//        // Place Marker at Centroid
+//        nearestPointMarker = gMap.addMarker(
+//            MarkerOptions().position(centroid).title("Centroid")
+//                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+//        )
         Log.d("disatance" ,"$distance")
 
      if(viewModel.isLive.value == true){
@@ -691,9 +819,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             }
 
         }
+        val distanceText = String.format("%.2f meters", shortestDistance)
         val area = calculatePolygonArea(manualMarkerList)
         binding.value1.text = "Area: %.2f sq.m".format(area)
-        binding.value2.text = "Area: %.2f sq.m".format(shortestDistance)
+        binding.value2.text = distanceText
         binding.secondTitle.text = "Nearest Boundary"
         // Draw a dotted line from current location to nearest point
         nearestPoint?.let { point ->
@@ -801,10 +930,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     /** Request Location Updates */
     @SuppressLint("MissingPermission")
     private fun requestLocationUpdates() {
+//        val personIcon = bitmapDescriptorFromVector(this,R.drawable.baseline_person_24)
         locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000L) // Every 5 seconds
             .setMinUpdateIntervalMillis(2000L) // Minimum 1 second between updates
             .build()
-        val personIcon = bitmapDescriptorFromVector(this,R.drawable.baseline_person_24)
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult.lastLocation?.let { location ->
@@ -817,18 +946,24 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                     }
 
 //                     B. Update/create 3D person marker
-//                    if (personMarker == null) {
+//
+//                    if (personMarker == null && currentLatLng == null) {
 //                        // First time: create marker
-//                        personMarker = gMap.addGroundOverlay(
-//                            GroundOverlayOptions()
-//                                .position(userLatLng,20f,20f)
-//                                .image(personIcon!!)
+//                        personMarker = gMap.addMarker(
+//                            MarkerOptions()
+//                                .position(userLatLng)
+//                                .icon(personIcon!!)
 //                                .anchor(0.5f, 0.5f) // Center the icon
 //                                .zIndex(100f) // Ensure it appears above other markers
+//
+//
 //                        )
+//                        viewModel.setCurrentLocationFetchingFlagTrue()
 //                    } else {
 //                        // Subsequent updates: move marker
 //                        personMarker?.position = userLatLng
+//                        viewModel.setCurrentLocationFetchingFlagTrue()
+//
 //
 //                    }
 //                    personMarker?.rotation = location.bearing
@@ -971,6 +1106,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private fun drawLinesBetweenMarkers(markerList : List<LatLng>) {
         // Clear existing polylines
         gMap.clear()
+//        viewModel.setCurrentLocationFetchingFlagFalse()
 
         // Add all markers to the map
         for (marker in markerList) {
@@ -1103,3 +1239,4 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     }
 }
+
