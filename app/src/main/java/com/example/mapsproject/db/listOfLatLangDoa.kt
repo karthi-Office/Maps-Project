@@ -2,7 +2,6 @@ package com.example.mapsproject.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
-import androidx.room.DeleteTable
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -10,7 +9,7 @@ import com.example.mapsproject.model.LatLangEntity
 
 @Dao
 interface listOfLatLangDoa {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOneLocation(latLangEntity: LatLangEntity)
 
     @Query("SELECT * FROM ListOfLatLangTable ORDER BY id  ASC")
