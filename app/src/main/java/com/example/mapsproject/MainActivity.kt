@@ -371,7 +371,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     }
     override fun onPause() {
         super.onPause()
-        stopService(Intent(this,VibrationService::class.java))
+        if(serviceStarted)stopService(Intent(this,VibrationService::class.java))
     }
 
     private fun notificationPermissionEnable() {
@@ -655,12 +655,13 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
 
 
-    @SuppressLint("DefaultLocale")
+    @SuppressLint("DefaultLocale", "SetTextI18n")
     private fun findCurrentPointToCenterPoint() {
         // Clear previous markers and lines
         viewModel.setCalculationFlagTrue()
         viewModel.setMarkerFlagFalse()
         removeDottedLineAndMarkers()
+        serviceStarted = false
 
         val currentLocation = latLangLiveData.value!!
         val centroid = calculateCentroid(manualMarkerList)
@@ -693,7 +694,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 startForegroundService(Intent(this, VibrationService::class.java))
                 serviceStarted = true
             }
-            if(distance >= 10.00 && !serviceStarted) {
+            if(distance >= 10.00 &&  serviceStarted) {
             stopService(Intent(this, VibrationService::class.java))
             serviceStarted = false
         }
@@ -720,12 +721,13 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     }
 
-    @SuppressLint("DefaultLocale")
+    @SuppressLint("DefaultLocale", "SetTextI18n")
     private fun findNearestMarker() {
         // Clear previous markers and lines
         viewModel.setCalculationFlagTrue()
         viewModel.setMarkerFlagFalse()
         removeDottedLineAndMarkers()
+        serviceStarted = false
 
         var shortestDistance = Double.MAX_VALUE
         var nearestPoint: LatLng? = null
@@ -789,12 +791,14 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     }
 
-    @SuppressLint("DefaultLocale")
+    @SuppressLint("DefaultLocale", "SetTextI18n")
     private fun findNearestBoundary() {
 
         viewModel.setCalculationFlagTrue()
         viewModel.setMarkerFlagFalse()
         removeDottedLineAndMarkers()
+        serviceStarted = false
+
 
         var shortestDistance = Double.MAX_VALUE
         var nearestPoint: LatLng? = null
