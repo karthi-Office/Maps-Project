@@ -675,11 +675,11 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         )
 //      val icons =
 ////          bitmapDescriptorFromVector(this, R.drawable.baseline_person_24)
-//        // Place Marker at Centroid
-//        nearestPointMarker = gMap.addMarker(
-//            MarkerOptions().position(centroid).title("Centroid")
-//                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-//        )
+        // Place Marker at Centroid
+        nearestPointMarker = gMap.addMarker(
+            MarkerOptions().position(centroid).title("Centroid")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+        )
         Log.d("disatance" ,"$distance")
 
      if(viewModel.isLive.value == true){
