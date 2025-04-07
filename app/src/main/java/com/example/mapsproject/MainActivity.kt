@@ -292,7 +292,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun setFabToolTip(options: FloatingActionButton, s: String) {
-
         ViewCompat.setTooltipText(options,s)
     }
     private fun setFabToolTip(options: ImageButton, s: String) {
@@ -367,7 +366,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     override fun onResume() {
         super.onResume()
-        if(serviceStarted)startService(Intent(this,VibrationService::class.java))
+        if(serviceStarted)startForegroundService(Intent(this,VibrationService::class.java))
     }
     override fun onPause() {
         super.onPause()
