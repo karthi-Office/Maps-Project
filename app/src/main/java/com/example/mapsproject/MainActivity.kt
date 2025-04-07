@@ -93,6 +93,11 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private var currentLatLng : LatLng? =null
      private lateinit var dBData : List<LatLangEntity>
      private lateinit var adapter : DbDataAdapter
+
+
+
+
+
      private var dataCount = 0
 //    state
     private var inCalculateTotalArea = false
