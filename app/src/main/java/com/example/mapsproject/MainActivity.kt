@@ -130,6 +130,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             setUpIsLive()
             draggableEvent()
             calculateCount()
+            requestLocationUpdates()
 //            setupCurrentLocation()
 
         }
@@ -210,6 +211,31 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             )
 
             calculateTheTotalArea()
+        }
+
+
+        // Add manual marker in the map
+        binding.addMarkerInMap.setOnClickListener {
+            latLangLiveData.value?.let {
+                addManualMarker(it)
+                val currentZoom = gMap.cameraPosition.zoom
+                val targetZoom = 20f
+
+                val zoomThreshold = 2f
+
+                val finalZoom = if (kotlin.math.abs(currentZoom - targetZoom) > zoomThreshold) {
+                    targetZoom
+                } else {
+                    currentZoom
+                }
+
+                gMap.animateCamera(
+                    CameraUpdateFactory.newLatLngZoom(it, finalZoom),
+                    2000,
+                    null
+                )
+                Toast.makeText(this,"Marker ${markersList.size} added",Toast.LENGTH_SHORT).show()
+            }
         }
         //nearest boundary
         binding.nearestBoundary.setOnClickListener {
@@ -1210,7 +1236,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             val tempMarker = gMap.addMarker(
                 MarkerOptions()
                     .position(latLng)
-                    .title("Marker ${manualMarkerList.size}")
+                    .title("Marker ${markersList.size}")
                     .draggable(true)
             )
             manualMarkerList.add(latLng)
@@ -1236,7 +1262,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         // Add all markers to the map
         for (marker in markerList) {
             gMap.addMarker(
-                MarkerOptions().position(marker).title("Marker ${markerList.indexOf(marker)}")
+                MarkerOptions().position(marker).title("Marker ${markerList.indexOf(marker)+1}")
             )
         }
 
@@ -1272,67 +1298,9 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     }
 
     @SuppressLint("PotentialBehaviorOverride")
-    fun applyMapStyle() {
-        val nightModeFlags =
-            this.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    private fun draggableEvent() {
+        // Set marker drag listeners
 
-        val styleResId = when (nightModeFlags) {
-            Configuration.UI_MODE_NIGHT_YES -> R.raw.dark_map_style
-            Configuration.UI_MODE_NIGHT_NO -> R.raw.light_map_style
-            else -> R.raw.light_map_style
-        }
-
-        try {
-            val success = gMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, styleResId))
-            if (!success) {
-                println("Map style parsing failed.")
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-    }
-
-    fun drawingPolygonOnDragging(newIndex: Int, newLatLng: LatLng) {
-        // Check if the markers form a valid polygon
-
-
-        // Add the marker to the map and the list
-        if (manualMarkerList.size >= 3 && !isPolygon(manualMarkerList)) {
-
-            Toast.makeText(this, "Markers do not form a polygon!", Toast.LENGTH_SHORT).show()
-            drawLinesBetweenMarkers(manualMarkerList)
-
-            // Draw the polygon if there are at least 3 markers
-            if (manualMarkerList.size >= 3) {
-                drawPolygon(manualMarkerList)
-            }
-            return
-        } else {
-            val tempMarker = gMap.addMarker(
-                MarkerOptions()
-                    .position(newLatLng)
-                    .title("Marker ${manualMarkerList.size}")
-                    .draggable(true)
-            )
-            manualMarkerList.removeAt(newIndex)
-            markersList.removeAt(newIndex)
-            markersList.add(newIndex, tempMarker!!)
-            manualMarkerList.add(newIndex, newLatLng)
-
-
-            // Draw lines between markers
-            drawLinesBetweenMarkers(manualMarkerList)
-
-            // Draw the polygon if there are at least 3 markers
-            if (manualMarkerList.size >= 3) {
-                drawPolygon(manualMarkerList)
-            }
-        }
-    }
-
-    @SuppressLint("PotentialBehaviorOverride")
-    private fun draggableEvent() {        // Set marker drag listeners
         gMap.setOnMarkerDragListener(
 
             object : GoogleMap.OnMarkerDragListener {
@@ -1354,17 +1322,62 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                     marker.showInfoWindow()
 
                 }
-
                 override fun onMarkerDragEnd(marker: Marker) {
-                    // Called when drag ends
-                    val newMarkerIndex = markersList.indexOf(marker)
-                    val newLatLng = LatLng(marker.position.latitude, marker.position.longitude)
+                    // Create a new LatLng for the new position
+                    marker?.let {
 
-                    drawingPolygonOnDragging(newMarkerIndex, newLatLng)
-                    marker.showInfoWindow()
+                        val newLatLng = LatLng(marker.position.latitude, marker.position.longitude)
+
+                        // Build a temporary list with the updated position of the dragged marker
+                        val temp = manualMarkerList.subList(0, manualMarkerList.size - 1) + listOf(
+                            newLatLng
+                        )
+
+                        // Only update the map and marker list if the shape is a polygon
+                        if (isPolygon(temp)) {
+                            // Update the marker list with the new marker
+                            markersList.removeAt(markersList.size - 1)
+                            manualMarkerList.removeAt(manualMarkerList.size - 1)
+
+                            addManualMarker(newLatLng)
+
+                            Log.d("formed", "$manualMarkerList")
+                        } else {
+                            // Optional: show message or revert marker visually
+                            Log.d("invalid", "New shape is not a polygon")
+                            marker.position = manualMarkerList.last() // Revert position
+                            marker.title = "Invalid position"
+                            marker.showInfoWindow()
+                            Toast.makeText(this@MainActivity,"Does not form a polygon",Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
             })
 
     }
+
+    @SuppressLint("PotentialBehaviorOverride")
+    fun applyMapStyle() {
+        val nightModeFlags =
+            this.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+
+        val styleResId = when (nightModeFlags) {
+            Configuration.UI_MODE_NIGHT_YES -> R.raw.dark_map_style
+            Configuration.UI_MODE_NIGHT_NO -> R.raw.light_map_style
+            else -> R.raw.light_map_style
+        }
+
+        try {
+            val success = gMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, styleResId))
+            if (!success) {
+                println("Map style parsing failed.")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+
 }
 

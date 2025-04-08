@@ -62,28 +62,34 @@ object IsPolygon {
 
     // Function to check if edges intersect
     private fun hasIntersectingEdges(points: List<Point>): Boolean {
-        if (points.size < 4) return false // Need at least 4 points to have intersecting edges
+        if (points.size < 4) return false // No intersecting possible with <4 points
 
-        // Check all pairs of non-consecutive edges
-        for (i in 0 until points.size - 1) {
-            for (j in i + 1 until points.size - 1) {
-                if (abs(i - j) > 1) { // Skip consecutive edges
-                    val edge1Start = points[i]
-                    val edge1End = points[i + 1]
-                    val edge2Start = points[j]
-                    val edge2End = points[j + 1]
+        // Create all edges, including the closing one
+        val edges = mutableListOf<Pair<Point, Point>>()
+        for (i in 0 until points.size) {
+            val start = points[i]
+            val end = points[(i + 1) % points.size] // Wrap around
+            edges.add(Pair(start, end))
+        }
 
-                    if (doEdgesIntersect(edge1Start, edge1End, edge2Start, edge2End)) {
-                        // Debugging: Log the intersecting edges
-                        println("Edges $i-${i + 1} and $j-${j + 1} intersect")
-                        return true
-                    }
+        // Check all non-adjacent edge pairs
+        for (i in edges.indices) {
+            for (j in i + 1 until edges.size) {
+                // Skip adjacent edges (they share a point)
+                if (i == j || (j == (i + 1) % edges.size) || (i == (j + 1) % edges.size)) continue
+
+                val (p1, q1) = edges[i]
+                val (p2, q2) = edges[j]
+
+                if (doEdgesIntersect(p1, q1, p2, q2)) {
+                    println("Edges $i and $j intersect")
+                    return true
                 }
             }
         }
+
         return false
     }
-
     // Function to check if two edges intersect
     private fun doEdgesIntersect(
         edge1Start: Point, edge1End: Point,
