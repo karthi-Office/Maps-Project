@@ -134,27 +134,67 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
         }
 
+
+        // Tool tip initialization
+        setFabToolTip(
+            binding.options, "Menu"
+        )
+        setFabToolTip(
+            binding.addMarkers,
+            "Click to Add Markers in Map. Tap the map to add markers "
+        )
+        setFabToolTip(
+            binding.addMarkers,
+            "Click to Add Markers in Map. Tap the map to add markers "
+        )
+        setFabToolTip(
+            binding.calculateTotalArea,
+            "Click button to calculate the total plot area"
+        )
+        setFabToolTip(
+            binding.nearestBoundary,
+            "Click button to find the nearest boundary"
+        )
+        setFabToolTip(
+            binding.nearestMarker,
+            "Click button to find the nearest edge"
+        )
+        setFabToolTip(
+            binding.currentLocation,
+            "Click the button to navigate to the current location"
+        )
+        setFabToolTip(
+            binding.currentLocationToCenter,
+            "Click button to calculate current location to center point of plot area"
+        )
+        setFabToolTip(
+            binding.addAreaIntoDb,
+            "Click button save plot"
+        )
+
+
+
+
         Log.d("data", viewModel.allLiveLatLng.value.toString())
         //Menu
 
         binding.options.setOnClickListener { v: View ->
             showMenu(v, R.menu.options_menu)
         }
-        setFabToolTip(binding.options, "Menu")
-
 
         binding.addMarkers.setOnClickListener {
             setAllStatesFalse()
             addMarkersInTheMap()
         }
-        setFabToolTip(
-            binding.addMarkers,
-            "Click to Add Markers in Map. Tap the map to add markers "
-        )
+
         //Total area
         binding.calculateTotalArea.setOnClickListener {
             if (manualMarkerList.size < 3) {
-                Toast.makeText(this, "Add at least Three Markers in the map to calculate area", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Add at least Three Markers in the map to calculate area",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
 
@@ -165,46 +205,52 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 "$inCurrentToCenter  $inNearestEdge $inNearestBoundary $inCalculateTotalArea"
             )
 
-            calculateTheToatalArea()
+            calculateTheTotalArea()
         }
-        setFabToolTip(binding.calculateTotalArea, "Click button to calculate the total plot area")
         //nearest boundary
         binding.nearestBoundary.setOnClickListener {
             if (manualMarkerList.size < 3) {
-                Toast.makeText(this, "Add at least Three Markers in the map to track Nearest Boundary", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Add at least Three Markers in the map to track Nearest Boundary",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
             settingUpNearestBoundaryIn()
             findNearestBoundary()
         }
-        setFabToolTip(binding.nearestBoundary, "Click button to find the nearest boundary")
 
         //nearest marker
         binding.nearestMarker.setOnClickListener {
             if (manualMarkerList.size < 3) {
-                Toast.makeText(this, "Add at least Three Markers in the map to track Nearest Edge", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Add at least Three Markers in the map to track Nearest Edge",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
 
             settingUpNearestMarkerIn()
             findNearestMarker()
         }
-        setFabToolTip(binding.nearestMarker, "Click button to find the nearest edge")
 
         //current to center
         binding.currentLocationToCenter.setOnClickListener {
             if (manualMarkerList.size < 3) {
-                Toast.makeText(this, "Add at least Three Markers in the map to Track current to center point", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Add at least Three Markers in the map to Track current to center point",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
 
             settingUpCurrentToCenterIn()
             findCurrentPointToCenterPoint()
         }
-        setFabToolTip(
-            binding.currentLocationToCenter,
-            "Click button to calculate current location to center point of plot area"
-        )
+
 
 
         //calculation cancel button
@@ -220,10 +266,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             animationFlag = true
             checkLocationPermission()
         }
-        setFabToolTip(
-            binding.currentLocation,
-            "Click the button to navigate to the current location"
-        )
+
 
 
         // Clear Single Marker
@@ -244,7 +287,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         //Shut down all markers activity's
         binding.closeMarker.setOnClickListener {
             viewModel.setMarkerFlagFalse()
-            clearAllMarkers()
+//            clearAllMarkers()
             gMap.setOnMapClickListener(null)
         }
 
@@ -286,10 +329,13 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 viewModel.setCalculationFlagFalse()
 
 
-            } else Toast.makeText(this, "Add at least Three Markers in the map to Store in the Local storage", Toast.LENGTH_SHORT).show()
+            } else Toast.makeText(
+                this,
+                "Add at least Three Markers in the map to Store in the Local storage",
+                Toast.LENGTH_SHORT
+            ).show()
 //            Toast.makeText(this,"Added Into Data Base",Toast.LENGTH_SHORT).show()
         }
-        setFabToolTip(binding.addAreaIntoDb, "Click button save plot")
     }
 
     private fun calculateCount() {
@@ -693,7 +739,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     }
 
 
-    @SuppressLint("DefaultLocale")
+    @SuppressLint("DefaultLocale", "SetTextI18n")
     private fun findCurrentPointToCenterPoint() {
         // Clear previous markers and lines
         viewModel.setCalculationFlagTrue()
@@ -760,7 +806,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     }
 
-    @SuppressLint("DefaultLocale")
+    @SuppressLint("DefaultLocale", "SetTextI18n")
     private fun findNearestMarker() {
         // Clear previous markers and lines
         viewModel.setCalculationFlagTrue()
@@ -831,7 +877,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     }
 
-    @SuppressLint("DefaultLocale")
+    @SuppressLint("DefaultLocale", "SetTextI18n")
     private fun findNearestBoundary() {
 
         viewModel.setCalculationFlagTrue()
@@ -905,7 +951,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-    private fun calculateTheToatalArea() {
+    @SuppressLint("SetTextI18n")
+    private fun calculateTheTotalArea() {
         viewModel.setCalculationFlagTrue()
         viewModel.setMarkerFlagFalse()
         removeDottedLineAndMarkers()
@@ -929,7 +976,11 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
 
         } else {
-            Toast.makeText(this, "Need to At least 3 MarkersAdd at least Three Markers in the map to calculate area", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                "Need to At least 3 MarkersAdd at least Three Markers in the map to calculate area",
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
     }
