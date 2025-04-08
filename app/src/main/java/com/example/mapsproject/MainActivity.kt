@@ -164,6 +164,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             "Click the button to navigate to the current location"
         )
         setFabToolTip(
+            binding.addMarkerInMap,
+            "Click the button to add markers in the map manually"
+        )
+        setFabToolTip(
             binding.currentLocationToCenter,
             "Click button to calculate current location to center point of plot area"
         )
@@ -539,6 +543,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 it.optionsCard.visibility = if (flag) View.VISIBLE else View.GONE
                 //                it.addMarkers.visibility = if (flag) View.GONE else View.GONE
                 it.addAreaIntoDb.visibility = if (flag) View.VISIBLE else View.GONE
+                it.addMarkerInMap.visibility = if (flag) View.VISIBLE else View.GONE
+                it.currentLocation.visibility = if (!flag) View.VISIBLE else View.GONE
                 if (flag) setUpOnClickListener() else gMap.setOnMapClickListener(null)
             }
         }
