@@ -2,7 +2,6 @@ package com.example.mapsproject.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
-import androidx.room.DeleteTable
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query

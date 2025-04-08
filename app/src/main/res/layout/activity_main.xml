@@ -47,12 +47,12 @@
         android:scaleY=".9"
 
         android:src="@drawable/add_task_24px"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/optionsCard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias=".02"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias=".9"
+        app:layout_constraintVertical_bias=".98"
         app:shapeAppearance="@style/addLocationfab" />
 
     <com.google.android.material.card.MaterialCardView
@@ -337,7 +337,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias=".96"
-        app:layout_constraintWidth_percent=".3">
+        app:layout_constraintWidth_percent=".25">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -349,7 +349,7 @@
                 android:layout_height="0dp"
                 android:autoSizeTextType="uniform"
                 android:gravity="center"
-                android:padding="@dimen/_7sdp"
+                android:padding="@dimen/_3sdp"
                 android:text="@string/cancel"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

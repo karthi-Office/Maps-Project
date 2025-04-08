@@ -3,9 +3,11 @@ package com.example.mapsproject.view_models
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.mapsproject.model.LatLangEntity
 import com.example.mapsproject.repo.LatLngRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,5 +47,7 @@ class MapViewModel @Inject constructor(private val repo : LatLngRepository) : Vi
     //get data count
 
     val countLiveData : LiveData<Int> = repo.getCount()
+
+
 
 }
