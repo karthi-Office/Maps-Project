@@ -67,6 +67,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import pub.devrel.easypermissions.EasyPermissions
 
 @AndroidEntryPoint
@@ -153,7 +154,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         //Total area
         binding.calculateTotalArea.setOnClickListener {
             if (manualMarkerList.size < 3) {
-                Toast.makeText(this, "Need at least 3 Markers", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Add at least Three Markers in the map to calculate area", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -170,7 +171,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         //nearest boundary
         binding.nearestBoundary.setOnClickListener {
             if (manualMarkerList.size < 3) {
-                Toast.makeText(this, "Need at least 3 Markers", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Add at least Three Markers in the map to track Nearest Boundary", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             settingUpNearestBoundaryIn()
@@ -181,7 +182,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         //nearest marker
         binding.nearestMarker.setOnClickListener {
             if (manualMarkerList.size < 3) {
-                Toast.makeText(this, "Need at least Markers", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Add at least Three Markers in the map to track Nearest Edge", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -193,7 +194,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         //current to center
         binding.currentLocationToCenter.setOnClickListener {
             if (manualMarkerList.size < 3) {
-                Toast.makeText(this, "Need at least Markers", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Add at least Three Markers in the map to Track current to center point", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -285,7 +286,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 viewModel.setCalculationFlagFalse()
 
 
-            } else Toast.makeText(this, "Add At least 3 markers", Toast.LENGTH_SHORT).show()
+            } else Toast.makeText(this, "Add at least Three Markers in the map to Store in the Local storage", Toast.LENGTH_SHORT).show()
 //            Toast.makeText(this,"Added Into Data Base",Toast.LENGTH_SHORT).show()
         }
         setFabToolTip(binding.addAreaIntoDb, "Click button save plot")
@@ -342,10 +343,13 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private fun setUpDataBaseMarker(places: LatLangEntity) {
 //         resetApp()
         if (places.latLangList.size > 2) {
-            Log.d("all data ", "$places")
-            manualMarkerList = places.latLangList.toMutableList()
-            drawLinesBetweenMarkers(places.latLangList)
-            drawPolygon(places.latLangList)
+//            Log.d("all data ", "$places")
+//            manualMarkerList = places.latLangList.toMutableList()
+//            drawLinesBetweenMarkers(places.latLangList)
+//            drawPolygon(places.latLangList)
+            places.latLangList.forEach {
+                addManualMarker(it)
+            }
             val center = calculateCentroid(places.latLangList)
             gMap.addMarker(
                 MarkerOptions()
@@ -592,7 +596,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
                         recyclerView.adapter = adapter
                         recyclerView.layoutManager = LinearLayoutManager(this)
-
                         viewModel.allLiveLatLng.observe(this) { data ->
                             adapter.setData(data)
                         }
@@ -647,8 +650,19 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private fun addSingleLatLngList(newLatLNgEntity: LatLangEntity) =
         lifecycleScope.launch(Dispatchers.IO) { viewModel.addLatLng(latLangEntity = newLatLNgEntity) }
 
-    private fun deleteAllData() =
-        lifecycleScope.launch(Dispatchers.IO) { viewModel.deleteAllData() }
+    private fun deleteAllData() {
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
+                viewModel.allLiveLatLng.value?.forEach {
+                    if (it.latLangList == manualMarkerList) {
+                        resetApp()
+                    }
+                }
+            }
+            viewModel.deleteAllData()
+        }
+    }
 
     private fun settingUpCurrentToCenterIn() {
         inCalculateTotalArea = false
@@ -915,7 +929,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
 
         } else {
-            Toast.makeText(this, "Need to At least 3 Markers", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Need to At least 3 MarkersAdd at least Three Markers in the map to calculate area", Toast.LENGTH_SHORT).show()
         }
 
     }
