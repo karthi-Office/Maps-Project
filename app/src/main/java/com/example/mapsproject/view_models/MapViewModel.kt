@@ -9,7 +9,6 @@ import com.example.mapsproject.repo.LatLngRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 @HiltViewModel
 class MapViewModel @Inject constructor(private val repo : LatLngRepository) : ViewModel() {
          val optionLiveData = MutableLiveData(false)
@@ -37,13 +36,19 @@ class MapViewModel @Inject constructor(private val repo : LatLngRepository) : Vi
    //DB actions
 
 //    adding one set  of latLng
-    fun addLatLng(latLangEntity: LatLangEntity) = repo.insertLatLngDetails(latLangEntity)
+    fun addLatLng(latLangEntity: LatLangEntity) =
+        viewModelScope.launch {
+              repo.insertLatLngDetails(latLangEntity)
+      }
 
     //Getting multiple latLng details Db
     val allLiveLatLng = repo.getAllLatLang()
 
     //Deleting all data
-    fun deleteAllData() = repo.deleteAllData()
+    fun deleteAllData() =
+       viewModelScope.launch {
+           repo.deleteAllData()
+       }
     //get data count
 
     val countLiveData : LiveData<Int> = repo.getCount()
@@ -51,3 +56,4 @@ class MapViewModel @Inject constructor(private val repo : LatLngRepository) : Vi
 
 
 }
+

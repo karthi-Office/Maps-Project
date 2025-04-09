@@ -7,11 +7,11 @@ import javax.inject.Inject
 
 class LatLngRepository @Inject constructor(private val listOfLatLangDoa: listOfLatLangDoa){
 
-    fun insertLatLngDetails(latLangEntity : LatLangEntity) = listOfLatLangDoa.insertOneLocation(latLangEntity)
+   suspend fun insertLatLngDetails(latLangEntity : LatLangEntity) = listOfLatLangDoa.insertOneLocation(latLangEntity)
 
     fun getAllLatLang() : LiveData<List<LatLangEntity>> = listOfLatLangDoa.getAllLatLang()
 
-    fun deleteAllData() = listOfLatLangDoa.deleteTable()
+    suspend fun deleteAllData() = listOfLatLangDoa.deleteTable()
 
     fun getCount() : LiveData<Int> = listOfLatLangDoa.getCount()
 }

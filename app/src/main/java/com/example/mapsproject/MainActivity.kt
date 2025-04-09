@@ -725,19 +725,16 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         popup.show()
     }
 
-    private fun addSingleLatLngList(newLatLNgEntity: LatLangEntity) =
-        lifecycleScope.launch(Dispatchers.IO) { viewModel.addLatLng(latLangEntity = newLatLNgEntity) }
+    private fun addSingleLatLngList(newLatLNgEntity: LatLangEntity) = viewModel.addLatLng(latLangEntity = newLatLNgEntity)
+
 
     private fun deleteAllData() {
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            withContext(Dispatchers.Main) {
-                viewModel.allLiveLatLng.value?.forEach {
-                    if (it.latLangList == manualMarkerList) {
-                        resetApp()
-                    }
+        lifecycleScope.launch {
+            viewModel.allLiveLatLng.value?.forEach {
+                if (it.latLangList == manualMarkerList) {
+                    resetApp()
                 }
-            }
+        }
             viewModel.deleteAllData()
         }
     }
