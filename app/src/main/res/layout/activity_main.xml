@@ -45,7 +45,6 @@
         android:contentDescription="@string/fabbtn"
         android:scaleX=".9"
         android:scaleY=".9"
-
         android:src="@drawable/add_task_24px"
         app:layout_constraintBottom_toTopOf="@id/optionsCard"
         app:layout_constraintEnd_toEndOf="parent"
@@ -61,8 +60,10 @@
         android:layout_height="0dp"
         android:backgroundTint="@android:color/transparent"
         app:cardElevation="0dp"
+        app:layout_constraintHeight_percent=".3"
+        app:layout_constraintWidth_percent=".14"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="1:19"
+           app:layout_constraintVertical_bias=".3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias=".97"
         app:layout_constraintStart_toStartOf="parent"
@@ -371,7 +372,7 @@
         app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias=".8"
+        app:layout_constraintVertical_bias=".83"
         app:layout_constraintWidth_percent=".5"
         app:strokeWidth="1dp">
 
