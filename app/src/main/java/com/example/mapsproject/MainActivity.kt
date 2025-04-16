@@ -823,10 +823,11 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 //            }
 
 
-            if (distance <= 10.00 ) {
+            if (distance <= 5.00 ) {
 
               startVibration()
-            } else if (distance > 10.00 ) {
+            }
+            if (distance >= 5.00 ) {
               stopVibration()
             }
 
@@ -887,13 +888,12 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 //                serviceStarted = false
 //            }
 
+            if (shortestDistance <= 5.00 ) {
 
-
-            if (shortestDistance <= 10.00 ) {
-               startVibration()
-            } else if (shortestDistance > 10.00 ) {
-
-                  stopVibration()
+                startVibration()
+            }
+            if (shortestDistance >= 5.00 ) {
+                stopVibration()
             }
         }
         val area = calculatePolygonArea(manualMarkerList)
@@ -971,10 +971,13 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
 
 
-            if (shortestDistance <= 10.00 ) {
-            startVibration()
-            } else if (shortestDistance >= 10.00 ) {
-            stopVibration()
+
+            if (shortestDistance <= 5.00 ) {
+
+                startVibration()
+            }
+            if (shortestDistance >= 5.00 ) {
+                stopVibration()
             }
 
         }
