@@ -28,6 +28,8 @@ object Instances {
     @Singleton
     fun provideLatLangDao( latLangRoomDb: LatLangRoomDb) : listOfLatLangDoa = latLangRoomDb.latLangDoa
 
+
+
     @Provides
     @Singleton
     fun provideRepo(langDoa: listOfLatLangDoa) : LatLngRepository = LatLngRepository(langDoa)

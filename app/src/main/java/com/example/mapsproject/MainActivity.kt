@@ -11,6 +11,8 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
@@ -106,13 +108,19 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private var inCurrentToCenter = false
     // current location icon
 
+    //vibration
+    private lateinit var vibrator: Vibrator
+
+// haptic
+
+
 
     private val viewModel: MapViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
+        vibrator = this.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -457,12 +465,15 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     override fun onResume() {
         super.onResume()
-        if (serviceStarted) startService(Intent(this, VibrationService::class.java))
+        if (serviceStarted) startVibration()
     }
 
     override fun onPause() {
         super.onPause()
-        stopService(Intent(this, VibrationService::class.java))
+//        stopService(Intent(this, VibrationService::class.java))
+        if(serviceStarted){
+            stopVibration()
+        }
     }
 
     private fun notificationPermissionEnable() {
@@ -802,13 +813,21 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
         if (viewModel.isLive.value == true) {
 
-            if (distance <= 10.00 && !serviceStarted) {
-                startForegroundService(Intent(this, VibrationService::class.java))
-                serviceStarted = true
-            }
-            if (distance >= 10.00 && !serviceStarted) {
-                stopService(Intent(this, VibrationService::class.java))
-                serviceStarted = false
+//            if (distance <= 10.00 && !serviceStarted) {
+//                startForegroundService(Intent(this, VibrationService::class.java))
+//                serviceStarted = true
+//            }
+//            if (distance >= 10.00 && !serviceStarted) {
+//                stopService(Intent(this, VibrationService::class.java))
+//                serviceStarted = false
+//            }
+
+
+            if (distance <= 10.00 ) {
+
+              startVibration()
+            } else if (distance > 10.00 ) {
+              stopVibration()
             }
 
         }
@@ -835,6 +854,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     }
 
+
+
     @SuppressLint("DefaultLocale", "SetTextI18n")
     private fun findNearestMarker() {
         // Clear previous markers and lines
@@ -856,16 +877,24 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
         if (viewModel.isLive.value == true) {
 
-            if (shortestDistance <= 10.00 && !serviceStarted) {
-                Log.d("intetent", "servieces")
-                startForegroundService(Intent(this, VibrationService::class.java))
-                serviceStarted = true
-            }
-            if (shortestDistance >= 10.00 && serviceStarted) {
-                stopService(Intent(this, VibrationService::class.java))
-                serviceStarted = false
-            }
+//            if (shortestDistance <= 10.00 && !serviceStarted) {
+//                Log.d("intetent", "servieces")
+//                startForegroundService(Intent(this, VibrationService::class.java))
+//                serviceStarted = true
+//            }
+//            if (shortestDistance >= 10.00 && serviceStarted) {
+//                stopService(Intent(this, VibrationService::class.java))
+//                serviceStarted = false
+//            }
 
+
+
+            if (shortestDistance <= 10.00 ) {
+               startVibration()
+            } else if (shortestDistance > 10.00 ) {
+
+                  stopVibration()
+            }
         }
         val area = calculatePolygonArea(manualMarkerList)
         binding.value1.text = "Area: %.2f sq.m".format(area)
@@ -931,13 +960,21 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
         if (viewModel.isLive.value == true) {
 
-            if (shortestDistance <= 10.00 && !serviceStarted) {
-                startForegroundService(Intent(this, VibrationService::class.java))
-                serviceStarted = true
-            }
-            if (shortestDistance >= 10.00 && serviceStarted) {
-                stopService(Intent(this, VibrationService::class.java))
-                serviceStarted = false
+//            if (shortestDistance <= 10.00 && !serviceStarted) {
+//                startForegroundService(Intent(this, VibrationService::class.java))
+//                serviceStarted = true
+//            }
+//            if (shortestDistance >= 10.00 && serviceStarted) {
+//                stopService(Intent(this, VibrationService::class.java))
+//                serviceStarted = false
+//            }
+
+
+
+            if (shortestDistance <= 10.00 ) {
+            startVibration()
+            } else if (shortestDistance >= 10.00 ) {
+            stopVibration()
             }
 
         }
@@ -1014,6 +1051,34 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     }
 
+
+    private fun stopVibration() {
+        serviceStarted = false
+        vibrator.cancel()
+        Log.d("vibration", "Vibration stopped")
+    }
+
+    private fun startVibration() {
+        serviceStarted = true
+        val supportsHaptic = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                vibrator.hasVibrator() &&
+                vibrator.hasAmplitudeControl()
+        if (supportsHaptic) {
+            val effect = VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK)
+            vibrator.vibrate(effect)
+            Log.d("haptic", "Haptic feedback (tick) triggered")
+        } else {
+            val duration = 300L
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val effect = VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE)
+                vibrator.vibrate(effect)
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(duration)
+            }
+            Log.d("vibration", "Simple vibration triggered")
+        }
+    }
     private fun addMarkersInTheMap() {
         removeDottedLineAndMarkers()
         viewModel.setCalculationFlagFalse()
@@ -1319,6 +1384,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                     marker.showInfoWindow()
 
                 }
+
                 override fun onMarkerDragEnd(marker: Marker) {
                     // Create a new LatLng for the new position
                     marker?.let {
